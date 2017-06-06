@@ -15,6 +15,9 @@ class ViewController: NSViewController {
     
     @IBOutlet weak var fileLoadIndicator: NSProgressIndicator!
     
+    var jsonObject: AnyObject?
+    
+    
     var selectedItem: URL? {
         didSet {
             displayTextView.string = ""
@@ -34,6 +37,7 @@ class ViewController: NSViewController {
             fileLoadIndicator.stopAnimation( nil )
         }
     }
+    
 
     // View events
     override func viewDidLoad() {
@@ -122,7 +126,6 @@ extension ViewController {
             } else {
                 parseString += String( character )
             }
-            
         }
         
         var responseText = ""
@@ -130,8 +133,67 @@ extension ViewController {
             responseText += token + "\n"
 //            print( token )
         }
-    
+        
+        jsonObject = processTokenList( tokens )
+        
         return responseText
+    }
+
+    func processTokenList(_ tokens: [String]) -> AnyObject? {
+   
+        var tempObject: AnyObject?
+        
+        var dictInset = 0
+        var arryInset = 0
+        var commaCount = 0
+        var colonCount = 0
+        var otherCount = 0
+        
+        var dictKeyExpected = false
+        var dictValueExpected = false
+        var colonExpected = false
+        var dictEndExpected = false
+//        var arrayEntryExpected = false
+        
+        var topDictionary = [String: Any]()
+        var currentDictionary = topDictionary
+        var currentKey = ""
+        var currentToken = ""
+        
+        for token in tokens {
+            switch token {
+            case "{":
+                dictInset += 1
+                dictKeyExpected = true
+            case "}":
+                dictInset -= 1
+            case "[":
+                arryInset += 1
+            case "]":
+                arryInset -= 1
+            case ",":
+                commaCount += 1
+            case ":":
+                colonCount += 1
+                if colonExpected {
+                    colonExpected = false
+                    dictValueExpected = true
+                }
+            default:
+                otherCount += 1
+                if dictKeyExpected {
+                    dictKeyExpected = false
+                    currentKey = token
+                    colonExpected = true
+                } else if dictValueExpected {
+                    dictValueExpected = false
+                    currentDictionary[currentKey] = token
+                    dictEndExpected = true
+                }
+            }
+        }
+        
+        return tempObject
     }
     
     func displayFileContents(_ text: String) -> NSAttributedString {
