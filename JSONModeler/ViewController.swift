@@ -15,8 +15,8 @@ class ViewController: NSViewController {
     
     @IBOutlet weak var fileLoadIndicator: NSProgressIndicator!
     
-    var jsonObject: AnyObject?
-    
+    var tokens: [String]?
+
     
     var selectedItem: URL? {
         didSet {
@@ -29,9 +29,10 @@ class ViewController: NSViewController {
             let infoString = try? String(contentsOf: selectedUrl)
             guard let textString = infoString else { return }
             if !textString.isEmpty {
-                let processedFile = processFileContents( textString )
-                let formattedText = displayFileContents( processedFile )
-                displayTextView.textStorage?.setAttributedString( formattedText )
+                tokens = processTokensFrom( JSON: textString )
+                guard tokens != nil else { return }
+                displayTextView.textStorage?.setAttributedString( displayRender( fromTokens: tokens! ) )
+                processTokenList( tokens! )
                 saveInfoButton.isEnabled = true
             }
             fileLoadIndicator.stopAnimation( nil )
@@ -82,7 +83,7 @@ class ViewController: NSViewController {
 
 extension ViewController {
     
-    func processFileContents(_ text: String) -> String {
+    func processTokensFrom(JSON text: String) -> [String] {
         
 //        print( text )
         
@@ -95,11 +96,27 @@ extension ViewController {
         var parseString = ""
         
         var inQuotedString = false
+        var isEscapingNextCharacter = false
         
         for character in text.characters {
-            if ignored.contains( character ) {
-                continue
+            
+            if inQuotedString {
+                if isEscapingNextCharacter {
+                    quoted += String( character )
+                    isEscapingNextCharacter = false
+                    continue
+                }
+                if character == "\\" {  // The presence of this character escapes the vlue of the next one
+                    quoted += String( character )
+                    isEscapingNextCharacter = true
+                    continue
+                }
+            } else {
+                if ignored.contains( character ) {
+                    continue
+                }
             }
+            
             if character == "\"" {
                 inQuotedString = !inQuotedString
                 quoted += String( character )
@@ -128,21 +145,11 @@ extension ViewController {
             }
         }
         
-        var responseText = ""
-        for token in tokens {
-            responseText += token + "\n"
-//            print( token )
-        }
-        
-        jsonObject = processTokenList( tokens )
-        
-        return responseText
+        return tokens
     }
 
-    func processTokenList(_ tokens: [String]) -> AnyObject? {
-   
-        var tempObject: AnyObject?
-        
+    func processTokenList(_ tokens: [String]) {
+
         var dictInset = 0
         var arryInset = 0
         var commaCount = 0
@@ -193,10 +200,14 @@ extension ViewController {
             }
         }
         
-        return tempObject
     }
     
-    func displayFileContents(_ text: String) -> NSAttributedString {
+    func displayRender( fromTokens tokens: [String]) -> NSAttributedString {
+        var parsedText = ""
+        for token in tokens {
+            parsedText += token + "\n"
+//            print( token )
+        }
         let paragraphStyle = NSMutableParagraphStyle.default().mutableCopy() as? NSMutableParagraphStyle
         paragraphStyle?.minimumLineHeight = 24
         paragraphStyle?.alignment = .left
@@ -207,7 +218,7 @@ extension ViewController {
             NSParagraphStyleAttributeName: paragraphStyle ?? NSParagraphStyle.default()
         ]
         
-        let formattedText = NSAttributedString(string: text, attributes: textAttributes)
+        let formattedText = NSAttributedString(string: parsedText, attributes: textAttributes)
         return formattedText
     }
     
