@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A91620011EE87741008EA905 /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A91620001EE87741008EA905 /* Parser.swift */; };
 		A9E3D79F1EE702A300C0A11F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E3D79E1EE702A300C0A11F /* AppDelegate.swift */; };
 		A9E3D7A11EE702A300C0A11F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E3D7A01EE702A300C0A11F /* ViewController.swift */; };
 		A9E3D7A31EE702A300C0A11F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A9E3D7A21EE702A300C0A11F /* Assets.xcassets */; };
@@ -33,6 +34,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A91620001EE87741008EA905 /* Parser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Parser.swift; sourceTree = "<group>"; };
 		A9E3D79B1EE702A300C0A11F /* JSONModeler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JSONModeler.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A9E3D79E1EE702A300C0A11F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A9E3D7A01EE702A300C0A11F /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -97,6 +99,7 @@
 			children = (
 				A9E3D79E1EE702A300C0A11F /* AppDelegate.swift */,
 				A9E3D7A01EE702A300C0A11F /* ViewController.swift */,
+				A91620001EE87741008EA905 /* Parser.swift */,
 				A9E3D7A21EE702A300C0A11F /* Assets.xcassets */,
 				A9E3D7A41EE702A300C0A11F /* Main.storyboard */,
 				A9E3D7A71EE702A300C0A11F /* Info.plist */,
@@ -260,6 +263,7 @@
 			files = (
 				A9E3D7A11EE702A300C0A11F /* ViewController.swift in Sources */,
 				A9E3D79F1EE702A300C0A11F /* AppDelegate.swift in Sources */,
+				A91620011EE87741008EA905 /* Parser.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -507,6 +511,7 @@
 				A9E3D7C21EE702A300C0A11F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		A9E3D7C31EE702A300C0A11F /* Build configuration list for PBXNativeTarget "JSONModelerTests" */ = {
 			isa = XCConfigurationList;
@@ -515,6 +520,7 @@
 				A9E3D7C51EE702A300C0A11F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		A9E3D7C61EE702A300C0A11F /* Build configuration list for PBXNativeTarget "JSONModelerUITests" */ = {
 			isa = XCConfigurationList;
@@ -523,6 +529,7 @@
 				A9E3D7C81EE702A300C0A11F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

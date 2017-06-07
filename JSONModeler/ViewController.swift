@@ -16,6 +16,8 @@ class ViewController: NSViewController {
     @IBOutlet weak var fileLoadIndicator: NSProgressIndicator!
     
     var tokens: [String]?
+    
+    var jsonObject: AnyObject?
 
     
     var selectedItem: URL? {
@@ -32,7 +34,8 @@ class ViewController: NSViewController {
                 tokens = produceTokensFrom( JSON: textString )
                 guard tokens != nil else { return }
                 displayRender( tokens! )
-                processTokens( tokens! )
+                
+                jsonObject = Parser.processTokens( tokens! )
                 saveInfoButton.isEnabled = true
             }
             fileLoadIndicator.stopAnimation( nil )
@@ -84,9 +87,6 @@ class ViewController: NSViewController {
 extension ViewController {
     
     func produceTokensFrom(JSON text: String) -> [String] {
-        
-//        print( text )
-        
         var tokens = [String]()
         let brackets: Set<Character> = ["{","}","[","]",":",","]
         let quoters: Set<Character> = ["\"","\'"]
@@ -103,12 +103,15 @@ extension ViewController {
             
             if inQuotedString {
                 if isEscapingNextCharacter {
+                    if !quoters.contains( character ) {
+                        quoteString += "\\"
+                    }
                     quoteString += String( character )
                     isEscapingNextCharacter = false
                     continue
                 }
                 if character == "\\" {  // The presence of this character escapes the value of the next one
-                    quoteString += String( character )
+//                    quoteString += String( character ) // Comment out to remove escaping characters
                     isEscapingNextCharacter = true
                     continue
                 }
@@ -119,7 +122,7 @@ extension ViewController {
             }
             if quoters.contains( character ) { // May match ' with ", use: character == "\""
                 inQuotedString = !inQuotedString
-                quoteString += String( character )
+//                quoteString += String( character )    // Comment out to retain quotes around keys and values
                 if !inQuotedString {
                     tokens.append( quoteString )
                     index += 1
@@ -156,70 +159,6 @@ extension ViewController {
         return tokens
     }
 
-    func processTokens(_ tokens: [String]) {
-
-        var dictInset = 0
-//        var arryInset = 0
-        var commaCount = 0
-        var colonCount = 0
-        var otherCount = 0
-        
-        var dictKeyExpected = false
-        var dictValueExpected = false
-        var colonExpected = false
-        var dictEndExpected = false
-        
-//        var jsonDictionary = Stack<Dictionary<String, Any>>()
-//        var currentDictionary: [String:Any]?
-        var currentKey = ""
-        var currentToken = ""
-        
-        for token in tokens {
-            switch token {
-            case "{":
-                dictInset += 1
-                dictKeyExpected = true
-//                currentDictionary = [String: Any]()
-//                if currentDictionary != nil {
-//                    jsonDictionary.push( currentDictionary! )
-//                }
-            case "}":
-                dictInset -= 1
-                if dictInset < 0 {
-                    print( "Error, dictionary bracket mismatch" )
-                }
-                if !dictEndExpected {
-                    print( "Eror, dictionary end bracket found when not expected" )
-                }
-                // currentDictionary done, pop current dictionary
-//            case "[":
-//                arryInset += 1
-//            case "]":
-//                arryInset -= 1
-            case ",":
-                commaCount += 1
-            case ":":
-                colonCount += 1
-                if colonExpected {
-                    colonExpected = false
-                    dictValueExpected = true
-                }
-            default:
-                otherCount += 1
-                if dictKeyExpected {
-                    dictKeyExpected = false
-                    currentKey = token
-                    colonExpected = true
-                } else if dictValueExpected {
-                    dictValueExpected = false
-//                    currentDictionary[currentKey] = token
-                    dictEndExpected = true
-                }
-            }
-        }
-        
-    }
-    
     func displayRender( _ tokens: [String]) {
         var parsedText = ""
         for token in tokens {
@@ -239,42 +178,4 @@ extension ViewController {
         displayTextView.textStorage?.setAttributedString( NSAttributedString(string: parsedText, attributes: textAttributes) )
     }
     
-    
-}
-
-struct Stack<Element> {
-    fileprivate var array: [Element] = []
-    
-    mutating func push(_ element: Element) {
-        array.append(element)
-    }
-    
-    mutating func pop() -> Element? {
-        return array.popLast()
-    }
-    
-    func peek() -> Element? {
-        return array.last
-    }
-
-    var isEmpty: Bool {
-        return array.isEmpty
-    }
-    
-    var count: Int {
-        return array.count
-    }
-}
-
-extension Stack: CustomStringConvertible {
-
-    var description: String {
-
-        let topDivider = "---Stack---\n"
-        let bottomDivider = "\n-----------\n"
-
-        let stackElements = array.map { "\($0)" }.reversed().joined(separator: "\n")
-
-        return topDivider + stackElements + bottomDivider
-    }
 }
