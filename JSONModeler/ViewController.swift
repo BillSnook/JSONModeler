@@ -35,7 +35,14 @@ class ViewController: NSViewController {
                 guard tokens != nil else { return }
                 displayRender( tokens! )
                 
-                jsonObject = Parser.processTokens( tokens! )
+                let parser = Parser( tokens! )
+                var index = 0
+                jsonObject = parser.processTokens( &index )
+                if jsonObject != nil {
+                    print( "Parser returns JSONObject: \(jsonObject!)" )
+                } else {
+                    print( "Parser returns nil" )
+                }
                 saveInfoButton.isEnabled = true
             }
             fileLoadIndicator.stopAnimation( nil )

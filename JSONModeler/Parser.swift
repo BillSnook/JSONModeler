@@ -9,47 +9,79 @@
 import Foundation
 
 
-class Parser {
+typealias DirType = [String:Any]
+
+enum ParseState {
+    case waitForStart
     
-    class func processTokens(_ tokens: [String]) -> AnyObject? {
+    case waitForKey
+    case waitForColon
+    case waitForValue
+    case doneWithDictEntry
+    
+    case allMessedUp
+    
+    case end
+}
+
+class Parser {
+   
+    var dictInset = 0
+    var commaCount = 0
+    var colonCount = 0
+    var otherCount = 0
+
+    var tokens: [String]
+    var count: Int
+    
+    
+    init(_ tokenList: [String]) {
+        tokens = tokenList
+        count = tokens.count
+    }
+    
+    
+    func processTokens(_ index: inout Int) -> AnyObject? {
         
-        var returnJSONObject: AnyObject?
-        
-        var dictInset = 0
-//        var arryInset = 0
-        var commaCount = 0
-        var colonCount = 0
-        var otherCount = 0
-        
-        var startSymbolExpected = true
-        var dictKeyExpected = false
-        var dictValueExpected = false
-        var colonExpected = false
-//        var commaExpected = false
-        var dictEntryComplete = false
-        
-        var jsonStack = Stack<Dictionary<String, Any>>()
-        var currentDictionary: [String:Any]?
         var currentKey = ""
-//        var currentToken = ""
+
+        var currentDictionary: DirType?
         
-        for token in tokens {
+        var state = ParseState.waitForStart
+        
+        
+        while index < count {   // Check token, check state, do operation, next state
+            let token = tokens[index]
+            index += 1
+            if state == .allMessedUp {
+                break
+            }
             switch token {
+                
             case "{":
-                print( "Got dictionary start symbol     -> {" )
-                if !startSymbolExpected {
-                    print( "Error, start symbol not expected" )
-                    return nil
-                }
-                startSymbolExpected = false
                 dictInset += 1
-                dictKeyExpected = true
-                currentDictionary = [String: Any]()
-                if currentDictionary == nil {
-                    print( "Error, unable to create dictionary" )
-                    return nil
+                switch state {
+                    
+                case .waitForStart:
+                    print( "Got dictionary start symbol     -> {" )
+                    state = .waitForKey
+                    currentDictionary = DirType()
+                    if currentDictionary == nil {
+                        print( "Error, unable to create dictionary" )
+                        return nil
+                    }
+                    
+                case .waitForValue:
+
+                    //                    }
+                    index -= 1
+                    currentDictionary![currentKey] = processTokens( &index )
+                    state = .waitForStart
+                default:
+                    print( "Error, start symbol not expected, state: \(state)" )
+                    state = .allMessedUp
                 }
-//                jsonStack.push( currentDictionary! )
+                
             case "}":
                 print( "Got dictionary end symbol       -> }" )
                 dictInset -= 1
@@ -57,105 +89,76 @@ class Parser {
                     print( "Error, dictionary bracket mismatch" )
                     return nil
                 }
-                if !dictEntryComplete {
-                    print( "Error, dictionary end bracket found when not expected" )
-                    return nil
-                }
-//                dictEntryComplete = false
-                startSymbolExpected = true
-                // currentDictionary done, pop current dictionary
-//                let _ = jsonStack.pop()
-                if returnJSONObject == nil {
-                    returnJSONObject = currentDictionary! as AnyObject
-                } else {
+                switch state {
+                    
+                case .waitForStart:
+                    state = .waitForStart
+                default:
+                    print( "Error, dictionary end symbol found when not expected, state: \(state)" )
+                    state = .allMessedUp
                 }
                 
 //            case "[":
 //                arryInset += 1
 //            case "]":
 //                arryInset -= 1
+                
             case ",":
-                print( "Got dictionary seperator symbol -> ," )
+                print( "Got dictionary separator symbol -> ," )
                 commaCount += 1
-                if !startSymbolExpected {
-                    print( "Error, start symbol not expected" )
-                    return nil
+                switch state {
+                    
+                case .waitForStart:
+                    state = .waitForKey
+                    
+                default:
+                    print( "Error, ',' symbol not expected, state: \(state)" )
+                    state = .allMessedUp
                 }
-                startSymbolExpected = false
-                if dictEntryComplete {
-                    dictKeyExpected = true
-                }
-                dictEntryComplete = false
+
             case ":":
                 print( "Got dictionary indicator symbol -> :" )
                 colonCount += 1
-                if colonExpected {
-                    colonExpected = false
-                    dictValueExpected = true
+                switch state {
+                    
+                case .waitForColon:
+                    state = .waitForValue
+                    
+                default:
+                    print( "Error, ':' symbol not expected, state: \(state)" )
+                    state = .allMessedUp
                 }
+                
             default:
                 print( "Got dictionary entry symbol     -> \(token)" )
                 otherCount += 1
-                if dictKeyExpected {
-                    dictKeyExpected = false
+                switch state {
+                    
+                case .waitForKey:
+                    state = .waitForColon
                     currentKey = token
-                    colonExpected = true
-                } else if dictValueExpected {
-                    dictValueExpected = false
+                    
+                case .waitForValue:
+                    state = .waitForStart
                     currentDictionary![currentKey] = token
-                    dictEntryComplete = true
-                    startSymbolExpected = true
+                    
+                default:
+                    state = .allMessedUp
+                    print( "Error, dictionary entry symbol was unexpected, state: \(state)" )
                 }
             }
         }
-        if !startSymbolExpected {
-            print( "Error, at end but not expecting a start symbol" )
-            return nil
+
+        switch state {
+        case .allMessedUp:
+            print( "Error, exit parser due to state error" )
+        case .waitForStart:
+            let returnJSONObject = currentDictionary! as AnyObject
+            return returnJSONObject
+        default:
+            print( "Error, at end but not in the waitForStart state" )
         }
-        if jsonStack.peek() != nil {
-            print( "Error, at end but jsonStack is not empty" )
-            return nil
-        }
-        print( "returnJSONObject is \(returnJSONObject!)" )
-        return returnJSONObject
+        return nil
     }
     
-}
-
-
-struct Stack<Element> {
-    fileprivate var array: [Element] = []
-    
-    mutating func push(_ element: Element) {
-        array.append(element)
-    }
-    
-    mutating func pop() -> Element? {
-        return array.popLast()
-    }
-    
-    func peek() -> Element? {
-        return array.last
-    }
-    
-    var isEmpty: Bool {
-        return array.isEmpty
-    }
-    
-    var count: Int {
-        return array.count
-    }
-}
-
-extension Stack: CustomStringConvertible {
-    
-    var description: String {
-        
-        let topDivider = "---Stack---\n"
-        let bottomDivider = "\n-----------\n"
-        
-        let stackElements = array.map { "\($0)" }.reversed().joined(separator: "\n")
-        
-        return topDivider + stackElements + bottomDivider
-    }
 }
