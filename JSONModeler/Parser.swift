@@ -188,7 +188,7 @@ class Parser {
         
         var state = ParseArrayState.waitForEntry
         
-        print( "Got array start symbol     -> {" )
+        print( "Got array start symbol          -> [" )
         
         while ( index < tokenCount ) && ( state != .arrayDone ) {   // Check token, check state, do operation, next state
             let token = tokens[index]
@@ -204,10 +204,13 @@ class Parser {
                 case .waitForEntry:
                     state = .waitForArrayEnd
                     print( "Got dictionary start symbol     -> {" )
-                    currentArray.append( processDictionary( &index ) )
+                    let subDictionary = processDictionary( &index )
+                    if subDictionary != nil {
+                        currentArray.append( subDictionary as Any )
+                    }
                     
                 default:
-                    print( "Error, array start symbol not expected, state: \(state)" )
+                    print( "Error, dictionary start symbol not expected, state: \(state)" )
                     state = .arrayMessedUp
                 }
                 
@@ -216,11 +219,23 @@ class Parser {
                 state = .arrayMessedUp
                 
             case "[":
-                print( "Error, array start symbol not expected, state: \(state)" )
-                state = .arrayMessedUp
+                switch state {
+                    
+                case .waitForEntry:
+                    state = .waitForArrayEnd
+                    print( "Got array start symbol          -> [" )
+                    let subArray = processArray( &index )
+                    if subArray != nil {
+                        currentArray.append( subArray as Any )
+                    }
+                    
+                default:
+                    print( "Error, array start symbol not expected, state: \(state)" )
+                    state = .arrayMessedUp
+                }
                 
             case "]":
-                print( "Got array end symbol       -> ]" )
+                print( "Got array end symbol            -> ]" )
                 switch state {
                     
                 case .waitForArrayEnd, .waitForEntry:
@@ -232,7 +247,7 @@ class Parser {
                 }
                 
             case ",":
-                print( "Got array separator symbol -> ," )
+                print( "Got array separator symbol      -> ," )
                 commaCount += 1
                 switch state {
                     
@@ -245,13 +260,13 @@ class Parser {
                 }
                 
             case ":":
-                print( "Got array indicator symbol -> :" )
+                print( "Got array indicator symbol      -> :" )
                 colonCount += 1
                 print( "Error, ':' symbol not expected, state: \(state)" )
                 state = .arrayMessedUp
                 
             default:
-                print( "Got array entry symbol     -> \(token)" )
+                print( "Got array entry symbol          -> \(token)" )
                 otherCount += 1
                 switch state {
                     
