@@ -36,8 +36,7 @@ class ViewController: NSViewController {
                 displayRender( tokens! )
                 
                 let parser = Parser( tokens! )
-                var index = 0
-                jsonObject = parser.processTokens( &index )
+                jsonObject = parser.processTokens()
                 if jsonObject != nil {
                     print( "Parser returns JSONObject: \(jsonObject!)" )
                 } else {
