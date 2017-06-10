@@ -9,7 +9,7 @@
 import Cocoa
 
 class ViewController: NSViewController {
-
+    
     @IBOutlet var displayTextView: NSTextView!
     @IBOutlet weak var saveInfoButton: NSButton!
     
@@ -33,16 +33,17 @@ class ViewController: NSViewController {
             if !textString.isEmpty {
                 tokens = produceTokensFrom( JSON: textString )
                 guard tokens != nil else { return }
+                
                 displayRender( tokens! )
                 
                 let parser = Parser( tokens! )
                 jsonObject = parser.processTokens()
-                if jsonObject != nil {
-                    print( "Parser returns JSONObject: \(jsonObject!)" )
-                } else {
-                    print( "Parser returns nil" )
-                }
-                saveInfoButton.isEnabled = true
+                guard jsonObject != nil else { return }
+                
+//                print( "Parser returns JSONObject: \(jsonObject!)" )
+                
+                let builder = Builder( jsonObject! )
+                saveInfoButton.isEnabled = builder.buildModelFile()
             }
             fileLoadIndicator.stopAnimation( nil )
         }
