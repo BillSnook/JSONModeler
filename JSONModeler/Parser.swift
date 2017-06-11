@@ -267,7 +267,7 @@ class Parser {
                 state = .arrayMessedUp
                 
             default:
-                print( "Got array entry symbol      ->  \(token)" )
+//                print( "Got array entry symbol      ->  \(token)" )
                 otherCount += 1
                 switch state {
                     

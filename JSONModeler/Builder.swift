@@ -8,6 +8,16 @@
 
 import Foundation
 
+/*
+ 
+Discussion: We have a dictionary or an array derived from a json string.
+  We want to use that to create a series of JSONModel files
+  representing the structures and relationships from the file.
+    To do that, we walk the structures, intending to collect
+  dictionary keys and value types and array types to publish.
+    The intended output format is the JSONModel file.
+ */
+
 class Builder {
     
     let objectRoot: AnyObject
