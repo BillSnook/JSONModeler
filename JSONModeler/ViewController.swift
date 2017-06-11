@@ -10,7 +10,9 @@ import Cocoa
 
 class ViewController: NSViewController {
     
-    @IBOutlet var displayTextView: NSTextView!
+    @IBOutlet weak var outlineTableView: NSOutlineView!
+    @IBOutlet weak var displayTextView: NSTextView!
+    
     @IBOutlet weak var saveInfoButton: NSButton!
     
     @IBOutlet weak var fileLoadIndicator: NSProgressIndicator!
@@ -34,12 +36,13 @@ class ViewController: NSViewController {
                 tokens = produceTokensFrom( JSON: textString )
                 guard tokens != nil else { return }
                 
-                displayRender( tokens! )
+//                displayRender( tokens! )
                 
                 let parser = Parser( tokens! )
                 jsonObject = parser.processTokens()
                 guard jsonObject != nil else { return }
                 
+                outlineTableView.reloadData()
 //                print( "Parser returns JSONObject: \(jsonObject!)" )
                 
                 let builder = Builder( jsonObject! )
@@ -83,13 +86,21 @@ class ViewController: NSViewController {
     
     @IBAction func saveInfo(_ sender: NSButton) {
         
+        let filer = Filer( model: "authenticate", module: "S2RModule" )
+        
+        filer.startFileEntry()
+        
+        filer.finishFileEntry()
+        
+        displayRender( filer.fileContents )
+        
         saveInfoButton.isEnabled = false
     }
     
 }
 
     
-    // MARK: - Getting file or folder information
+// MARK: - Getting file or folder information
 
 extension ViewController {
     
@@ -166,23 +177,111 @@ extension ViewController {
         return tokens
     }
 
-    func displayRender( _ tokens: [String]) {
-        var parsedText = ""
-        for token in tokens {
-            parsedText += token + "\n"
-//            print( token )
-        }
+    func displayRender( _ string: String) {
+
         let paragraphStyle = NSMutableParagraphStyle.default().mutableCopy() as? NSMutableParagraphStyle
-        paragraphStyle?.minimumLineHeight = 24
+        paragraphStyle?.minimumLineHeight = 20
         paragraphStyle?.alignment = .left
-        paragraphStyle?.tabStops = [ NSTextTab(type: .leftTabStopType, location: 240) ]
+//        paragraphStyle?.tabStops = [ NSTextTab(type: .leftTabStopType, location: 240) ]
         
         let textAttributes: [String: Any] = [
-            NSFontAttributeName: NSFont.systemFont(ofSize: 14),
+            NSFontAttributeName: NSFont.userFixedPitchFont(ofSize: 14)!,
             NSParagraphStyleAttributeName: paragraphStyle ?? NSParagraphStyle.default()
         ]
         
-        displayTextView.textStorage?.setAttributedString( NSAttributedString(string: parsedText, attributes: textAttributes) )
+        displayTextView.textStorage?.setAttributedString( NSAttributedString(string: string, attributes: textAttributes) )
     }
     
 }
+
+
+// MARK: - Outline view data source delegate
+
+extension ViewController: NSOutlineViewDataSource {
+    
+    func outlineView(_ outlineView: NSOutlineView, numberOfChildrenOfItem item: Any?) -> Int {
+        
+        if let dictItem = item as? DictionaryType {
+            return dictItem.count
+        }
+        if let dictItem = jsonObject as? DictionaryType {
+            return dictItem.count
+        }
+        return 0
+    }
+ 
+    func outlineView(_ outlineView: NSOutlineView, child index: Int, ofItem item: Any?) -> Any {
+        
+        if let dictItem = item as? DictionaryType {
+            let dictKeys = dictItem.keys
+            let keys = dictKeys.sorted()
+            return dictItem[keys[index]]!
+        }
+        if let dictItem = jsonObject as? DictionaryType {
+            let dictKeys = dictItem.keys
+            let keys = dictKeys.sorted()
+            return dictItem[keys[index]]!
+        }
+        return 0
+    }
+
+    func outlineView(_ outlineView: NSOutlineView, isItemExpandable item: Any) -> Bool {
+        
+        if item is DictionaryType {
+            return true
+        } else if item is ArrayType {
+            return true
+        } else if item is String {
+            return false
+        } else {
+            return false
+        }
+    }
+
+    func outlineView(_ outlineView: NSOutlineView, objectValueFor tableColumn: NSTableColumn?, byItem item: Any?) -> Any? {
+        
+        print( "tableColumn title: \(String(describing: tableColumn?.title))")
+        return tableColumn?.title
+    }
+
+}
+
+
+// MARK: - Outline view delegate
+
+extension ViewController: NSOutlineViewDelegate {
+    
+    func outlineView(_ outlineView: NSOutlineView, viewFor tableColumn: NSTableColumn?, item: Any) -> NSView? {
+        var view: NSTableCellView?
+        // More code here
+        var value = ""
+        if item is DictionaryType {
+            value = "Dictionary"
+        } else if item is ArrayType {
+            value = "Array"
+        } else if let stringItem = item as? String {
+            value = stringItem
+        } else {
+            value = "NoneSuch"
+        }
+        let tableID = tableColumn?.identifier
+        view = outlineView.make(withIdentifier: tableID!, owner: self) as? NSTableCellView
+        if let textField = view?.textField {
+            textField.stringValue = value
+            textField.sizeToFit()
+        }
+        return view
+    }
+
+    func outlineViewSelectionDidChange(_ notification: Notification) {
+
+        guard let outlineView = notification.object as? NSOutlineView else {
+            return
+        }
+
+        let selectedIndex = outlineView.selectedRow
+        // Do something
+    }
+
+}
+

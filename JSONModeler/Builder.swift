@@ -58,22 +58,23 @@ class Builder {
         }
         for key in keys {
             print( "\(indentSpace)\(key ) :" )
-            let newRoot = dictionary[key]
-            let objDictionary = newRoot as? DictionaryType
+            let value = dictionary[key]
+            
+            let objDictionary = value as? DictionaryType
             if objDictionary != nil {
                 didSucceed = modelDictionary( objDictionary! )
             } else {
-                let objArray = newRoot as? ArrayType
+                let objArray = value as? ArrayType
                 if objArray != nil {
                     didSucceed = modelArray( objArray! )
                 } else {
                     indent += 1
-                    didSucceed = modelString( newRoot as AnyObject )
+                    didSucceed = modelString( value as AnyObject )
                     indent -= 1
                 }
             }
             if !didSucceed {
-                print( "Failed for key \(key) with \(String(describing: newRoot))" )
+                print( "Failed for key \(key) with \(String(describing: value))" )
             }
         }
         indent -= 1
