@@ -20,6 +20,10 @@ class ViewController: NSViewController {
     var tokens: [String]?
     
     var jsonObject: AnyObject?
+    
+    var outline: Outline?
+    
+    var fileName: String?
 
     
     var selectedItem: URL? {
@@ -42,11 +46,24 @@ class ViewController: NSViewController {
                 jsonObject = parser.processTokens()
                 guard jsonObject != nil else { return }
                 
-                outlineTableView.reloadData()
 //                print( "Parser returns JSONObject: \(jsonObject!)" )
+                if var pathName = self.selectedItem?.lastPathComponent {
+                    if (pathName.hasSuffix( ".json" )) {
+                        let endIndex = pathName.endIndex
+                        pathName.removeSubrange(Range(uncheckedBounds: (lower: pathName.index(endIndex, offsetBy: -5), upper: endIndex)))
+                        self.fileName = pathName
+                        print( "\(self.fileName!)" )
+                    }
+                }
+                if fileName == nil {
+                    fileName = "Root"
+                }
+                let builder = Builder( jsonObject!, fileName: fileName! )
+                outline = builder.buildModelFile()
                 
-                let builder = Builder( jsonObject! )
-                saveInfoButton.isEnabled = builder.buildModelFile()
+                outlineTableView.reloadData()
+                
+                saveInfoButton.isEnabled = ( outline != nil )
             }
             fileLoadIndicator.stopAnimation( nil )
         }
@@ -79,7 +96,6 @@ class ViewController: NSViewController {
         panel.beginSheetModal(for: window) { (result) in
             if result == NSFileHandlingPanelOKButton {
                 self.selectedItem = panel.urls[0]
-//                print(self.selectedItem)
             }
         }
     }
@@ -201,48 +217,54 @@ extension ViewController: NSOutlineViewDataSource {
     
     func outlineView(_ outlineView: NSOutlineView, numberOfChildrenOfItem item: Any?) -> Int {
         
-        if let dictItem = item as? DictionaryType {
-            return dictItem.count
+        if let outlineItem = item as? Outline {
+            return outlineItem.children.count
         }
-        if let dictItem = jsonObject as? DictionaryType {
-            return dictItem.count
+        if let outlineCount = outline?.children.count {
+            return outlineCount
         }
         return 0
     }
  
     func outlineView(_ outlineView: NSOutlineView, child index: Int, ofItem item: Any?) -> Any {
         
-        if let dictItem = item as? DictionaryType {
-            let dictKeys = dictItem.keys
-            let keys = dictKeys.sorted()
-            return dictItem[keys[index]]!
+        if let outlineItem = item as? Outline {
+            return outlineItem.children[index]
         }
-        if let dictItem = jsonObject as? DictionaryType {
-            let dictKeys = dictItem.keys
-            let keys = dictKeys.sorted()
-            return dictItem[keys[index]]!
+        if let outlineItem = outline {
+            return outlineItem.children[index]
         }
-        return 0
+        return outline as Any
     }
 
     func outlineView(_ outlineView: NSOutlineView, isItemExpandable item: Any) -> Bool {
         
-        if item is DictionaryType {
-            return true
-        } else if item is ArrayType {
-            return true
-        } else if item is String {
-            return false
-        } else {
-            return false
+        if let outlineItem = item as? Outline {
+            switch outlineItem.childType {
+            case .dictionary, .array:
+                return true
+            default:
+                return false
+            }
         }
+        return false
     }
 
-    func outlineView(_ outlineView: NSOutlineView, objectValueFor tableColumn: NSTableColumn?, byItem item: Any?) -> Any? {
-        
-        print( "tableColumn title: \(String(describing: tableColumn?.title))")
-        return tableColumn?.title
-    }
+//    func outlineView(_ outlineView: NSOutlineView, objectValueFor tableColumn: NSTableColumn?, byItem item: Any?) -> Any? {
+//        
+////        print( "tableColumn title: \(String(describing: tableColumn?.title))")
+//        var value = ""
+//        if item is DictionaryType {
+//            value = "Dictionary"
+//        } else if item is ArrayType {
+//            value = "Array"
+//        } else if let stringItem = item as? String {
+//            value = stringItem
+//        } else {
+//            value = "NoneSuch"
+//        }
+//        return value
+//    }
 
 }
 
@@ -253,23 +275,22 @@ extension ViewController: NSOutlineViewDelegate {
     
     func outlineView(_ outlineView: NSOutlineView, viewFor tableColumn: NSTableColumn?, item: Any) -> NSView? {
         var view: NSTableCellView?
-        // More code here
-        var value = ""
-        if item is DictionaryType {
-            value = "Dictionary"
-        } else if item is ArrayType {
-            value = "Array"
-        } else if let stringItem = item as? String {
-            value = stringItem
-        } else {
-            value = "NoneSuch"
+
+        if let outlineItem = item as? Outline {
+            let tableID = tableColumn?.identifier
+            var value = ""
+            if tableID == "KeyCell" {
+                value = outlineItem.key
+            } else {
+                value = outlineItem.value
+            }
+            view = outlineView.make(withIdentifier: tableID!, owner: self) as? NSTableCellView
+            if let textField = view?.textField {
+                textField.stringValue = value
+                textField.sizeToFit()
+            }
         }
-        let tableID = tableColumn?.identifier
-        view = outlineView.make(withIdentifier: tableID!, owner: self) as? NSTableCellView
-        if let textField = view?.textField {
-            textField.stringValue = value
-            textField.sizeToFit()
-        }
+        
         return view
     }
 

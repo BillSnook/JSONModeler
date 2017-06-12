@@ -699,7 +699,7 @@
                                                     <rect key="frame" x="1" y="0.0" width="417" height="449"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <subviews>
-                                                        <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" multipleSelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" headerView="ITT-0A-4Il" viewBased="YES" indentationPerLevel="8" outlineTableColumn="gRM-SF-2a1" id="uU4-13-0xQ">
+                                                        <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" multipleSelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" headerView="ITT-0A-4Il" viewBased="YES" indentationPerLevel="16" outlineTableColumn="gRM-SF-2a1" id="uU4-13-0xQ">
                                                             <rect key="frame" x="0.0" y="0.0" width="417" height="426"/>
                                                             <autoresizingMask key="autoresizingMask"/>
                                                             <size key="intercellSpacing" width="3" height="2"/>
@@ -759,9 +759,8 @@
                                                                             <rect key="frame" x="158.5" y="1" width="256.5" height="17"/>
                                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                             <subviews>
-                                                                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Rbs-bd-hmW">
-                                                                                    <rect key="frame" x="0.0" y="0.0" width="256.5" height="17"/>
-                                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Rbs-bd-hmW">
+                                                                                    <rect key="frame" x="0.0" y="0.0" width="256" height="17"/>
                                                                                     <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="cfi-ii-wyc">
                                                                                         <font key="font" metaFont="system"/>
                                                                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -769,6 +768,11 @@
                                                                                     </textFieldCell>
                                                                                 </textField>
                                                                             </subviews>
+                                                                            <constraints>
+                                                                                <constraint firstAttribute="trailing" secondItem="Rbs-bd-hmW" secondAttribute="trailing" constant="2" id="1co-e0-P4e"/>
+                                                                                <constraint firstItem="Rbs-bd-hmW" firstAttribute="leading" secondItem="gx6-pi-DjP" secondAttribute="leading" constant="2" id="avY-DP-HpS"/>
+                                                                                <constraint firstItem="Rbs-bd-hmW" firstAttribute="centerY" secondItem="gx6-pi-DjP" secondAttribute="centerY" id="oYd-Kn-AbP"/>
+                                                                            </constraints>
                                                                             <connections>
                                                                                 <outlet property="textField" destination="Rbs-bd-hmW" id="thC-0d-9bT"/>
                                                                             </connections>

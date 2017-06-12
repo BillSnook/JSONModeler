@@ -20,36 +20,47 @@ Discussion: We have a dictionary or an array derived from a json string.
 
 class Builder {
     
+    let modelName: String
     let objectRoot: AnyObject
+    
+    var outlineRoot: Outline
+    
     var indent = 0
     
-    init( _ jsonObject: AnyObject ) {
+    init( _ jsonObject: AnyObject, fileName: String ) {
         
-        objectRoot = jsonObject
+        objectRoot = jsonObject     // This is a dictionary or an array that reflects the json file structure and contents
+        modelName = fileName
+        outlineRoot = Outline( key: modelName, value: "", type: .dictionary )
     }
     
-    func buildModelFile() -> Bool {
+    func buildModelFile() -> Outline? {
     
         let objDictionary = objectRoot as? DictionaryType
         if objDictionary != nil {
             print( "" )
-            return modelDictionary( objDictionary! )
-        } else {
-            let objArray = objectRoot as? ArrayType
-            if objArray != nil {
-                print( "" )
-                return modelArray( objArray! )
+            if let children = modelDictionary( objDictionary! ) {
+                outlineRoot.addChildren( children )
+                return outlineRoot
             } else {
-                print( "Error, top=level object is neither a dictionary or an array" )
-                return false
+                return nil
             }
+        } else {
+//            let objArray = objectRoot as? ArrayType
+//            if objArray != nil {
+//                print( "" )
+//                return modelArray( objArray! )
+//            } else {
+                print( "Error, top-level object is neither a dictionary or an array" )
+                return nil
+//            }
         }
     }
     
-    func modelDictionary( _ dictionary: DictionaryType ) -> Bool {
+    func modelDictionary( _ dictionary: DictionaryType ) -> [Outline]? {
     
         let keys = dictionary.keys
-        var didSucceed = true
+        var outline = [Outline]()
         
         indent += 1
         var indentSpace = ""
@@ -62,51 +73,67 @@ class Builder {
             
             let objDictionary = value as? DictionaryType
             if objDictionary != nil {
-                didSucceed = modelDictionary( objDictionary! )
-            } else {
-                let objArray = value as? ArrayType
-                if objArray != nil {
-                    didSucceed = modelArray( objArray! )
+                let newOutline = Outline(key: key, value: "", type: .dictionary )
+                if let children = modelDictionary( objDictionary! ) {
+                    newOutline.addChildren( children )
+                    outline.append( newOutline )
                 } else {
+                    return nil
+                }
+            } else {
+//                let objArray = value as? ArrayType
+//                if objArray != nil {
+//                    let child = modelArray( objArray! )
+//                    outline?.addChild( child )
+//                } else {
                     indent += 1
-                    didSucceed = modelString( value as AnyObject )
+                    if let value = modelString( value as AnyObject ) {
+                        let child = Outline(key: key, value: value, type: .string )
+                        outline.append( child )
+                    } else {
+                        return nil
+                    }
                     indent -= 1
-                }
+//                }
             }
-            if !didSucceed {
-                print( "Failed for key \(key) with \(String(describing: value))" )
-            }
+//            if outline == nil {
+//                print( "Failed for key \(key) with \(String(describing: value))" )
+//            } else {
+//                
+//            }
         }
         indent -= 1
-        return didSucceed
+        return outline
     }
     
-    func modelArray( _ array: ArrayType ) -> Bool {
+//    func modelArray( _ array: ArrayType ) -> [Outline]? {
+//    
+//        var outline: [Outline]?
+//        
+//        indent += 1
+//        for entry in array {
+//            let objDictionary = entry as? DictionaryType
+//            if objDictionary != nil {
+//                outline = modelDictionary( objDictionary! )
+//            } else {
+//                let objArray = entry as? ArrayType
+//                if objArray != nil {
+//                    outline = modelArray( objArray! )
+//                } else {
+//                    outline = modelString( entry as AnyObject )
+//                }
+//            }
+//            if outline == nil {
+//                print( "Failed with \(String(describing: entry))" )
+//            }
+//        }
+//        indent -= 1
+//        return outline
+//    }
     
-        var didSucceed = true
-        
-        indent += 1
-        for entry in array {
-            let objDictionary = entry as? DictionaryType
-            if objDictionary != nil {
-                didSucceed = modelDictionary( objDictionary! )
-            } else {
-                let objArray = entry as? ArrayType
-                if objArray != nil {
-                    didSucceed = modelArray( objArray! )
-                } else {
-                    didSucceed = modelString( entry as AnyObject )
-                }
-            }
-            if !didSucceed {
-                print( "Failed with \(String(describing: entry))" )
-            }
-        }
-        indent -= 1
-        return didSucceed
-    }
-    
-    func modelString( _ object: AnyObject ) -> Bool {
+    func modelString( _ object: AnyObject ) -> String? {
+
+//        var outline: Outline?
 
         let newString = object as? String
         if newString != nil {
@@ -115,10 +142,11 @@ class Builder {
                 indentSpace += "  "
             }
             print( "\(indentSpace)\(newString!)" )
-            return true
+            return newString
         } else {
-            print( "Got unrecognized type: \(String(describing: object))" )
-            return false
+            let hopefulString = String(describing: object)
+            print( "Got unrecognized type: \(hopefulString)" )
+            return nil // hopefulString
         }
     }
 }

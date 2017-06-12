@@ -10,6 +10,7 @@
 		A91620011EE87741008EA905 /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A91620001EE87741008EA905 /* Parser.swift */; };
 		A98B0B511EEC736300D41CCA /* Builder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98B0B501EEC736300D41CCA /* Builder.swift */; };
 		A98B0B531EEDB50E00D41CCA /* Filer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98B0B521EEDB50E00D41CCA /* Filer.swift */; };
+		A98B0B551EEE061400D41CCA /* Outline.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98B0B541EEE061400D41CCA /* Outline.swift */; };
 		A9E3D79F1EE702A300C0A11F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E3D79E1EE702A300C0A11F /* AppDelegate.swift */; };
 		A9E3D7A11EE702A300C0A11F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E3D7A01EE702A300C0A11F /* ViewController.swift */; };
 		A9E3D7A31EE702A300C0A11F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A9E3D7A21EE702A300C0A11F /* Assets.xcassets */; };
@@ -39,6 +40,7 @@
 		A91620001EE87741008EA905 /* Parser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Parser.swift; sourceTree = "<group>"; };
 		A98B0B501EEC736300D41CCA /* Builder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Builder.swift; sourceTree = "<group>"; };
 		A98B0B521EEDB50E00D41CCA /* Filer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Filer.swift; sourceTree = "<group>"; };
+		A98B0B541EEE061400D41CCA /* Outline.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Outline.swift; sourceTree = "<group>"; };
 		A9E3D79B1EE702A300C0A11F /* JSONModeler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JSONModeler.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A9E3D79E1EE702A300C0A11F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A9E3D7A01EE702A300C0A11F /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -106,6 +108,7 @@
 				A91620001EE87741008EA905 /* Parser.swift */,
 				A98B0B501EEC736300D41CCA /* Builder.swift */,
 				A98B0B521EEDB50E00D41CCA /* Filer.swift */,
+				A98B0B541EEE061400D41CCA /* Outline.swift */,
 				A9E3D7A21EE702A300C0A11F /* Assets.xcassets */,
 				A9E3D7A41EE702A300C0A11F /* Main.storyboard */,
 				A9E3D7A71EE702A300C0A11F /* Info.plist */,
@@ -269,6 +272,7 @@
 			files = (
 				A9E3D7A11EE702A300C0A11F /* ViewController.swift in Sources */,
 				A98B0B531EEDB50E00D41CCA /* Filer.swift in Sources */,
+				A98B0B551EEE061400D41CCA /* Outline.swift in Sources */,
 				A9E3D79F1EE702A300C0A11F /* AppDelegate.swift in Sources */,
 				A91620011EE87741008EA905 /* Parser.swift in Sources */,
 				A98B0B511EEC736300D41CCA /* Builder.swift in Sources */,
