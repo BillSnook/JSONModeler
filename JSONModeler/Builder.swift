@@ -36,24 +36,26 @@ class Builder {
     
     func buildModelFile() -> Outline? {
     
-        let objDictionary = objectRoot as? DictionaryType
-        if objDictionary != nil {
+        if let objDictionary = objectRoot as? DictionaryType {
             print( "" )
-            if let children = modelDictionary( objDictionary! ) {
+            if let children = modelDictionary( objDictionary ) {
                 outlineRoot.addChildren( children )
                 return outlineRoot
             } else {
                 return nil
             }
         } else {
-//            let objArray = objectRoot as? ArrayType
-//            if objArray != nil {
-//                print( "" )
-//                return modelArray( objArray! )
-//            } else {
+            if let objArray = objectRoot as? ArrayType {
+                if let children = modelArray( objArray ) {
+                    outlineRoot.addChildren( children )
+                    return outlineRoot
+                } else {
+                    return nil
+                }
+            } else {
                 print( "Error, top-level object is neither a dictionary or an array" )
                 return nil
-//            }
+            }
         }
     }
     
@@ -70,70 +72,77 @@ class Builder {
         for key in keys {
             print( "\(indentSpace)\(key ) :" )
             let value = dictionary[key]
-            
-            let objDictionary = value as? DictionaryType
-            if objDictionary != nil {
+            if let objDictionary = value as? DictionaryType {
                 let newOutline = Outline(key: key, value: "", type: .dictionary )
-                if let children = modelDictionary( objDictionary! ) {
+                if let children = modelDictionary( objDictionary ) {
                     newOutline.addChildren( children )
                     outline.append( newOutline )
                 } else {
                     return nil
                 }
             } else {
-//                let objArray = value as? ArrayType
-//                if objArray != nil {
-//                    let child = modelArray( objArray! )
-//                    outline?.addChild( child )
-//                } else {
+                if let objArray = value as? ArrayType {
+                    let newOutline = Outline(key: key, value: "", type: .array )
+                    if let children = modelArray( objArray ) {
+                        newOutline.addChildren( children )
+                        outline.append( newOutline )
+                    } else {
+                        return nil
+                    }
+                } else {
                     indent += 1
                     if let value = modelString( value as AnyObject ) {
-                        let child = Outline(key: key, value: value, type: .string )
-                        outline.append( child )
+                        let newOutline = Outline(key: key, value: value, type: .string )
+                        outline.append( newOutline )
                     } else {
                         return nil
                     }
                     indent -= 1
-//                }
+                }
             }
-//            if outline == nil {
-//                print( "Failed for key \(key) with \(String(describing: value))" )
-//            } else {
-//                
-//            }
         }
         indent -= 1
         return outline
     }
     
-//    func modelArray( _ array: ArrayType ) -> [Outline]? {
-//    
-//        var outline: [Outline]?
-//        
-//        indent += 1
-//        for entry in array {
-//            let objDictionary = entry as? DictionaryType
-//            if objDictionary != nil {
-//                outline = modelDictionary( objDictionary! )
-//            } else {
-//                let objArray = entry as? ArrayType
-//                if objArray != nil {
-//                    outline = modelArray( objArray! )
-//                } else {
-//                    outline = modelString( entry as AnyObject )
-//                }
-//            }
-//            if outline == nil {
-//                print( "Failed with \(String(describing: entry))" )
-//            }
-//        }
-//        indent -= 1
-//        return outline
-//    }
+    func modelArray( _ array: ArrayType ) -> [Outline]? {
+    
+        var outline = [Outline]()
+        
+        indent += 1
+        for entry in array {
+            if let objDictionary = entry as? DictionaryType {
+                let newOutline = Outline(key: "Array", value: "", type: .dictionary )
+                if let children = modelDictionary( objDictionary ) {
+                    newOutline.addChildren( children )
+                    outline.append( newOutline )
+                } else {
+                    return nil
+                }
+            } else {
+                if let objArray = entry as? ArrayType {
+                    let newOutline = Outline(key: "Array", value: "", type: .array )
+                    if let children = modelArray( objArray ) {
+                        newOutline.addChildren( children )
+                        outline.append( newOutline )
+                    } else {
+                        return nil
+                    }
+                } else {
+                    if let value = modelString( entry as AnyObject ) {
+                        let newOutline = Outline(key: value, value: "", type: .string )
+                        outline.append( newOutline )
+                    } else {
+                        return nil
+                    }
+                }
+            }
+        }
+        indent -= 1
+        return outline
+    }
     
     func modelString( _ object: AnyObject ) -> String? {
-
-//        var outline: Outline?
 
         let newString = object as? String
         if newString != nil {
