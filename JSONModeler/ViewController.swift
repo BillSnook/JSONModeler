@@ -40,7 +40,7 @@ class ViewController: NSViewController {
                 tokens = produceTokensFrom( JSON: textString )
                 guard tokens != nil else { return }
                 
-//                displayRender( tokens! )
+                displayTokens( tokens! )
                 
                 let parser = Parser( tokens! )
                 jsonObject = parser.processTokens()
@@ -208,6 +208,26 @@ extension ViewController {
         displayTextView.textStorage?.setAttributedString( NSAttributedString(string: string, attributes: textAttributes) )
     }
     
+    func displayTokens( _ tokens: [String]) {
+        var parsedText = ""
+        for token in tokens {
+            parsedText += token + "\n"
+//            print( token )
+        }
+        let paragraphStyle = NSMutableParagraphStyle.default().mutableCopy() as? NSMutableParagraphStyle
+        paragraphStyle?.minimumLineHeight = 24
+        paragraphStyle?.alignment = .left
+        paragraphStyle?.tabStops = [ NSTextTab(type: .leftTabStopType, location: 240) ]
+        
+        let textAttributes: [String: Any] = [
+            NSFontAttributeName: NSFont.systemFont(ofSize: 14),
+            NSParagraphStyleAttributeName: paragraphStyle ?? NSParagraphStyle.default()
+        ]
+        
+        displayTextView.textStorage?.setAttributedString( NSAttributedString(string: parsedText, attributes: textAttributes) )
+    }
+    
+
 }
 
 
