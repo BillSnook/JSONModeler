@@ -21,7 +21,7 @@ class ViewController: NSViewController {
     
     var jsonObject: AnyObject?
     
-    var outline: Outline?
+    var outlines: Outline?
     
     var fileName: String?
 
@@ -47,7 +47,7 @@ class ViewController: NSViewController {
                 guard jsonObject != nil else { return }
                 
 //                print( "Parser returns JSONObject: \(jsonObject!)" )
-                if var pathName = self.selectedItem?.lastPathComponent {
+                if var pathName = self.selectedItem?.lastPathComponent {    // Get clean name of json source file
                     if (pathName.hasSuffix( ".json" )) {
                         let endIndex = pathName.endIndex
                         pathName.removeSubrange(Range(uncheckedBounds: (lower: pathName.index(endIndex, offsetBy: -5), upper: endIndex)))
@@ -58,12 +58,13 @@ class ViewController: NSViewController {
                 if fileName == nil {
                     fileName = "Root"
                 }
+                
                 let builder = Builder( jsonObject!, fileName: fileName! )
-                outline = builder.buildModelFile()
+                outlines = builder.buildModelFile()
                 
                 outlineTableView.reloadData()
                 
-                saveInfoButton.isEnabled = ( outline != nil )
+                saveInfoButton.isEnabled = ( outlines != nil )
             }
             fileLoadIndicator.stopAnimation( nil )
         }
@@ -106,6 +107,18 @@ class ViewController: NSViewController {
         
         filer.startFileEntry()
         
+        for index in 0..<outlines!.children.count {
+            let outline = outlines!.children[index]
+            switch outline.childType {
+            case .string:
+                filer.addSimpleProperty( outline.key )
+            case .dictionary:
+                filer.addDictionaryProperty( outline.key )
+            default:
+                filer.addSimpleProperty( "?" )
+            }
+        }
+        
         filer.finishFileEntry()
         
         displayRender( filer.fileContents )
@@ -113,6 +126,17 @@ class ViewController: NSViewController {
         saveInfoButton.isEnabled = false
     }
     
+    @IBAction func doubleClickEntry(_ sender: NSOutlineView) {
+        
+        let item = sender.item(atRow: sender.clickedRow)
+        
+        if sender.isItemExpanded(item) {
+            sender.collapseItem(item)
+        } else {
+            sender.expandItem(item)
+        }
+    }
+
 }
 
     
@@ -240,7 +264,7 @@ extension ViewController: NSOutlineViewDataSource {
         if let outlineItem = item as? Outline {
             return outlineItem.children.count
         }
-        if let outlineCount = outline?.children.count {
+        if let outlineCount = outlines?.children.count {
             return outlineCount
         }
         return 0
@@ -251,10 +275,10 @@ extension ViewController: NSOutlineViewDataSource {
         if let outlineItem = item as? Outline {
             return outlineItem.children[index]
         }
-        if let outlineItem = outline {
+        if let outlineItem = outlines {
             return outlineItem.children[index]
         }
-        return outline as Any
+        return outlines as Any
     }
 
     func outlineView(_ outlineView: NSOutlineView, isItemExpandable item: Any) -> Bool {

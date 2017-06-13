@@ -26,11 +26,25 @@ class Filer {
     
         let headerFormat = "//\n//  \(model).swift\n//  \(module)\n//\n\nimport Foundation\nimport HiltonSharedUtilities\n\n"
         
-        let classFormat = "@@objc public final class \(model): NSObject {\n\n"
+        let classFormat = "@objc public final class \(model): NSObject {\n\n"
         
         fileContents = headerFormat + classFormat
         
         // Fill in data
+        
+    }
+    
+    func addSimpleProperty( _ value: String ) {
+        
+        let simpleVarFormat = "    public var \(value) : String\n"
+        fileContents += simpleVarFormat
+        
+    }
+    
+    func addDictionaryProperty( _ value: String ) {
+        
+        let simpleVarFormat = "    public var \(value) : Dictionary\n"
+        fileContents += simpleVarFormat
         
     }
     
