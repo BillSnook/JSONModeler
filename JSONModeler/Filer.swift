@@ -14,35 +14,39 @@ class Filer {
     let model: String
     let module: String
     
+    var outline: Outline
     var fileContents = ""
     
-    init( model: String, module: String ) {
+    init( model: String, module: String, outline: Outline ) {
         
         self.model = model
         self.module = module
+        self.outline = outline
     }
     
-    func buildModelFile( _ outlines: Outline ) -> Bool {
+    func buildModelFile() -> String {
         
         startFileEntry()
         
-        for index in 0..<outlines.children.count {
-            let outline = outlines.children[index]
-            switch outline.childType {
+        for index in 0..<outline.children.count {
+            let thisModel = outline.children[index]
+            switch thisModel.childType {
             case .string:
-                addSimpleProperty( outline.key )
+                addSimpleProperty( thisModel.key )
             case .dictionary:
-                addDictionaryProperty( outline.key )
+                addDictionaryProperty( thisModel.key )
             case .array:
-                addArrayProperty( outline.key )
+                addArrayProperty( thisModel.key )
             default:
                 addSimpleProperty( "?" )
             }
         }
         
+        makeInits()
+        
         finishFileEntry()
 
-        return true
+        return fileContents
     }
     
     func startFileEntry() {
@@ -76,6 +80,35 @@ class Filer {
         let simpleVarFormat = "    public var \(value) : Array\n"
         fileContents += simpleVarFormat
         
+    }
+    
+    func makeInits( ) {
+        
+        fileContents += "\n    init( "
+        
+        for index in 0..<outline.children.count {
+            let thisModel = outline.children[index]
+            
+            fileContents += paramName( thisModel.key, type: thisModel.childType.rawValue )
+            if index < outline.children.count-1 {
+                fileContents += ", "
+            }
+        }
+        
+        fileContents += " ) {\n\n"
+        
+        
+        fileContents += "\n    }\n\n"
+    }
+    
+    func paramName( _ name: String, type: String ) -> String {
+        
+        return "\(name): \(type)"
+    }
+    
+    func typeToString( _ type: EntryType ) -> String {
+        
+        return type.rawValue
     }
     
     func finishFileEntry() {

@@ -9,23 +9,25 @@
 import Foundation
 
 
-enum EntryType {
-    case dictionary
-    case array
-    case string
-    case unknown
+enum EntryType: String {
+    case dictionary = "Dictionary"
+    case array = "Array"
+    case string = "String"
+    case unknown = "NSObject"
 }
 
 class Outline: NSObject {
     let key:        String
     let value:      String
     let childType:  EntryType
+    var optional:   Bool
     var children:   [Outline]
     
     init( key: String, value: String, type: EntryType ) {
         self.key = key
         self.value = value
         self.childType = type
+        self.optional = false
         self.children = [Outline]()
     }
     

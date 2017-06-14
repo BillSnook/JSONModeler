@@ -116,9 +116,9 @@ class ViewController: NSViewController {
     
     @IBAction func saveInfo(_ sender: NSButton) {
         
-        let filer = Filer( model: modelNameTextField.stringValue, module: moduleNameTextField.stringValue )
+        let filer = Filer( model: modelNameTextField.stringValue, module: moduleNameTextField.stringValue, outline: outlines! )
         
-        let response = filer.buildModelFile( outlines! )
+        let response = filer.buildModelFile()
         print( "response: \(response)" )
         
         displayRender( filer.fileContents )
