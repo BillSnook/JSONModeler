@@ -17,6 +17,16 @@ class ViewController: NSViewController {
     
     @IBOutlet weak var fileLoadIndicator: NSProgressIndicator!
     
+    @IBOutlet weak var topButton: NSButton!
+    @IBOutlet weak var bottomRightButton: NSButton!
+    
+    @IBOutlet weak var modelNameTextField: NSTextField!
+    @IBOutlet weak var moduleNameTextField: NSTextField!
+    
+    @IBOutlet weak var modelNameLabel: NSTextField!
+    @IBOutlet weak var moduleNameLabel: NSTextField!
+    
+    
     var tokens: [String]?
     
     var jsonObject: AnyObject?
@@ -76,6 +86,9 @@ class ViewController: NSViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        topButton.title = "TBD"
+        topButton.isHidden = true
+        bottomRightButton.title = "Display Model FIle"
     }
 
     override var representedObject: Any? {
@@ -103,7 +116,7 @@ class ViewController: NSViewController {
     
     @IBAction func saveInfo(_ sender: NSButton) {
         
-        let filer = Filer( model: "authenticate", module: "S2RModule" )
+        let filer = Filer( model: modelNameTextField.stringValue, module: moduleNameTextField.stringValue )
         
         filer.startFileEntry()
         
