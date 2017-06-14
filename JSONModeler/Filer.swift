@@ -22,6 +22,29 @@ class Filer {
         self.module = module
     }
     
+    func buildModelFile( _ outlines: Outline ) -> Bool {
+        
+        startFileEntry()
+        
+        for index in 0..<outlines.children.count {
+            let outline = outlines.children[index]
+            switch outline.childType {
+            case .string:
+                addSimpleProperty( outline.key )
+            case .dictionary:
+                addDictionaryProperty( outline.key )
+            case .array:
+                addArrayProperty( outline.key )
+            default:
+                addSimpleProperty( "?" )
+            }
+        }
+        
+        finishFileEntry()
+
+        return true
+    }
+    
     func startFileEntry() {
     
         let headerFormat = "//\n//  \(model).swift\n//  \(module)\n//\n\nimport Foundation\nimport HiltonSharedUtilities\n\n"
@@ -44,6 +67,13 @@ class Filer {
     func addDictionaryProperty( _ value: String ) {
         
         let simpleVarFormat = "    public var \(value) : Dictionary\n"
+        fileContents += simpleVarFormat
+        
+    }
+    
+    func addArrayProperty( _ value: String ) {
+        
+        let simpleVarFormat = "    public var \(value) : Array\n"
         fileContents += simpleVarFormat
         
     }

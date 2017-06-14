@@ -118,21 +118,8 @@ class ViewController: NSViewController {
         
         let filer = Filer( model: modelNameTextField.stringValue, module: moduleNameTextField.stringValue )
         
-        filer.startFileEntry()
-        
-        for index in 0..<outlines!.children.count {
-            let outline = outlines!.children[index]
-            switch outline.childType {
-            case .string:
-                filer.addSimpleProperty( outline.key )
-            case .dictionary:
-                filer.addDictionaryProperty( outline.key )
-            default:
-                filer.addSimpleProperty( "?" )
-            }
-        }
-        
-        filer.finishFileEntry()
+        let response = filer.buildModelFile( outlines! )
+        print( "response: \(response)" )
         
         displayRender( filer.fileContents )
         
