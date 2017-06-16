@@ -326,7 +326,11 @@ extension ViewController: NSOutlineViewDelegate {
             if tableID == "KeyCell" {
                 value = outlineItem.key
             } else {
-                value = outlineItem.value
+                if tableID == "ValueCell" {
+                    value = outlineItem.value
+                } else {
+                    value = outlineItem.key
+                }
             }
             view = outlineView.make(withIdentifier: tableID!, owner: self) as? NSTableCellView
             if let textField = view?.textField {
@@ -338,15 +342,43 @@ extension ViewController: NSOutlineViewDelegate {
         return view
     }
 
-    func outlineViewSelectionDidChange(_ notification: Notification) {
-
-        guard let outlineView = notification.object as? NSOutlineView else {
-            return
-        }
-
-        let selectedIndex = outlineView.selectedRow
-        // Do something
-    }
-
+//    func outlineView(_ outlineView: NSOutlineView, shouldEdit tableColumn: NSTableColumn?, item: Any) -> Bool {
+//        
+//        let tableID = tableColumn?.identifier
+//        if tableID == "ValueCell" {
+//            return true
+//        } else {
+//            return false
+//        }
+//    }
+//    
+//    func outlineViewSelectionDidChange(_ notification: Notification) {
+//
+//        guard let outlineView = notification.object as? NSOutlineView else {
+//            return
+//        }
+//
+//        let selectedIndex = outlineView.selectedRow
+//        // Do something
+//    }
+//
+//    func outlineView(_ outlineView: NSOutlineView, shouldSelect tableColumn: NSTableColumn?) -> Bool {
+//        
+//        let tableID = tableColumn?.identifier
+//        if tableID == "ValueCell" {
+//            return true
+//        } else {
+//            return false
+//        }
+//    }
+//    
+//    
+//    
+//    func outlineView(_ outlineView: NSOutlineView, didClick tableColumn: NSTableColumn) {
+//        
+//        let tableID = tableColumn.identifier
+//        print( "Click in column \(tableID)" )
+//    }
+    
 }
 

@@ -73,7 +73,7 @@ class Builder {
             print( "\(indentSpace)\(key ) :" )
             let value = dictionary[key]
             if let objDictionary = value as? DictionaryType {
-                let newOutline = Outline(key: key, value: "", type: .dictionary )
+                let newOutline = Outline(key: key, value: "Dictionary", type: .dictionary )
                 if let children = modelDictionary( objDictionary ) {
                     newOutline.addChildren( children )
                     outline.append( newOutline )
@@ -82,7 +82,7 @@ class Builder {
                 }
             } else {
                 if let objArray = value as? ArrayType {
-                    let newOutline = Outline(key: key, value: "", type: .array )
+                    let newOutline = Outline(key: key, value: "Array", type: .array )
                     if let children = modelArray( objArray ) {
                         newOutline.addChildren( children )
                         outline.append( newOutline )
@@ -110,6 +110,7 @@ class Builder {
         var outline = [Outline]()
         
         indent += 1
+//        outline.append( Outline(key: "[", value: "", type: .string ) )
         for entry in array {
             if let objDictionary = entry as? DictionaryType {
                 let newOutline = Outline(key: "Array", value: "", type: .dictionary )
@@ -138,6 +139,7 @@ class Builder {
                 }
             }
         }
+//        outline.append( Outline(key: "]", value: "", type: .string ) )
         indent -= 1
         return outline
     }

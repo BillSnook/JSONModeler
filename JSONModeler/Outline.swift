@@ -19,6 +19,7 @@ enum EntryType: String {
 class Outline: NSObject {
     let key:        String
     let value:      String
+    let name:       String
     let childType:  EntryType
     var optional:   Bool
     var children:   [Outline]
@@ -26,6 +27,7 @@ class Outline: NSObject {
     init( key: String, value: String, type: EntryType ) {
         self.key = key
         self.value = value
+        self.name = ""
         self.childType = type
         self.optional = false
         self.children = [Outline]()
