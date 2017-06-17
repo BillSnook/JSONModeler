@@ -137,6 +137,15 @@ class ViewController: NSViewController {
         }
     }
 
+    @IBAction func changedName(_ sender: NSTextField) {
+        print( "Changed string: \(sender.stringValue)" )
+        let selectedItem = outlineTableView.selectedRow
+        if selectedItem != -1 {
+            var item = outlineTableView.item(atRow: selectedItem ) as! Outline
+            print( "Changed item \(item.key) from \(item.value) to \(sender.stringValue)" )
+            item.name = sender.stringValue
+        }
+    }
 }
 
     
@@ -296,7 +305,7 @@ extension ViewController: NSOutlineViewDataSource {
 
 //    func outlineView(_ outlineView: NSOutlineView, objectValueFor tableColumn: NSTableColumn?, byItem item: Any?) -> Any? {
 //        
-////        print( "tableColumn title: \(String(describing: tableColumn?.title))")
+//        print( "tableColumn title: \(String(describing: tableColumn?.title))")
 //        var value = ""
 //        if item is DictionaryType {
 //            value = "Dictionary"
@@ -304,6 +313,8 @@ extension ViewController: NSOutlineViewDataSource {
 //            value = "Array"
 //        } else if let stringItem = item as? String {
 //            value = stringItem
+//        } else if let outlineItem = item as? Outline {
+//            value = outlineItem.key
 //        } else {
 //            value = "NoneSuch"
 //        }
@@ -322,19 +333,23 @@ extension ViewController: NSOutlineViewDelegate {
 
         if let outlineItem = item as? Outline {
             let tableID = tableColumn?.identifier
-            var value = ""
+            var displayValue = ""
             if tableID == "KeyCell" {
-                value = outlineItem.key
+                displayValue = outlineItem.key
             } else {
                 if tableID == "ValueCell" {
-                    value = outlineItem.value
+                    if ( outlineItem.name != "" ) {
+                        displayValue = outlineItem.name
+                    } else {
+                        displayValue = outlineItem.value
+                    }
                 } else {
-                    value = outlineItem.key
+                    displayValue = outlineItem.optional ? "Yes" : "No"
                 }
             }
             view = outlineView.make(withIdentifier: tableID!, owner: self) as? NSTableCellView
             if let textField = view?.textField {
-                textField.stringValue = value
+                textField.stringValue = displayValue
                 textField.sizeToFit()
             }
         }

@@ -19,7 +19,7 @@ enum EntryType: String {
 class Outline: NSObject {
     let key:        String
     let value:      String
-    let name:       String
+    var name:       String
     let childType:  EntryType
     var optional:   Bool
     var children:   [Outline]
