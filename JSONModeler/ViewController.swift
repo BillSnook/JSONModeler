@@ -139,11 +139,16 @@ class ViewController: NSViewController {
 
     @IBAction func changedName(_ sender: NSTextField) {
         print( "Changed string: \(sender.stringValue)" )
-        let selectedItem = outlineTableView.selectedRow
-        if selectedItem != -1 {
-            let item = outlineTableView.item(atRow: selectedItem ) as! Outline
+        let selectedRow = outlineTableView.selectedRow
+        if selectedRow != -1 {
+            let item = outlineTableView.item(atRow: selectedRow ) as! Outline
+            let selectedColumn = outlineTableView.selectedColumn
             print( "Changed item \(item.key) from \(item.value) to \(sender.stringValue)" )
-            item.value = sender.stringValue
+            if selectedColumn == 1 {    // Value
+                item.value = sender.stringValue
+            } else {                    // Optional
+                item.optional = sender.stringValue == "Yes" ? true : false
+            }
         }
     }
 }
@@ -353,16 +358,22 @@ extension ViewController: NSOutlineViewDelegate {
         return view
     }
 
-//    func outlineView(_ outlineView: NSOutlineView, shouldEdit tableColumn: NSTableColumn?, item: Any) -> Bool {
-//        
-//        let tableID = tableColumn?.identifier
-//        if tableID == "ValueCell" {
-//            return true
-//        } else {
-//            return false
-//        }
-//    }
-//    
+    func outlineView(_ outlineView: NSOutlineView, shouldEdit tableColumn: NSTableColumn?, item: Any) -> Bool {
+        
+        let tableID = tableColumn?.identifier
+        if tableID == "ValueCell" {
+            let outline = item as? Outline
+            if outline != nil {
+                if (outline?.children.count)! > 0 {
+                    return true
+                }
+            }
+        } else if tableID == "OptionalCell" {
+            return true
+        }
+        return false
+    }
+
 //    func outlineViewSelectionDidChange(_ notification: Notification) {
 //
 //        guard let outlineView = notification.object as? NSOutlineView else {

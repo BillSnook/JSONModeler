@@ -92,7 +92,7 @@ class Builder {
                 } else {
                     indent += 1
                     if let value = modelString( value as AnyObject ) {
-                        let newOutline = Outline(key: key, value: value, type: .string )
+                        let newOutline = Outline(key: key, value: "String", type: .string )
                         outline.append( newOutline )
                     } else {
                         return nil
@@ -113,7 +113,7 @@ class Builder {
 //        outline.append( Outline(key: "[", value: "", type: .string ) )
         for entry in array {
             if let objDictionary = entry as? DictionaryType {
-                let newOutline = Outline(key: "Array", value: "", type: .dictionary )
+                let newOutline = Outline(key: "Array", value: "Dictionary", type: .dictionary )
                 if let children = modelDictionary( objDictionary ) {
                     newOutline.addChildren( children )
                     outline.append( newOutline )
@@ -122,7 +122,7 @@ class Builder {
                 }
             } else {
                 if let objArray = entry as? ArrayType {
-                    let newOutline = Outline(key: "Array", value: "", type: .array )
+                    let newOutline = Outline(key: "Array", value: "Array", type: .array )
                     if let children = modelArray( objArray ) {
                         newOutline.addChildren( children )
                         outline.append( newOutline )
@@ -131,7 +131,7 @@ class Builder {
                     }
                 } else {
                     if let value = modelString( entry as AnyObject ) {
-                        let newOutline = Outline(key: value, value: "", type: .string )
+                        let newOutline = Outline(key: value, value: "String", type: .string )
                         outline.append( newOutline )
                     } else {
                         return nil
