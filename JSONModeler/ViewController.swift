@@ -141,9 +141,9 @@ class ViewController: NSViewController {
         print( "Changed string: \(sender.stringValue)" )
         let selectedItem = outlineTableView.selectedRow
         if selectedItem != -1 {
-            var item = outlineTableView.item(atRow: selectedItem ) as! Outline
+            let item = outlineTableView.item(atRow: selectedItem ) as! Outline
             print( "Changed item \(item.key) from \(item.value) to \(sender.stringValue)" )
-            item.name = sender.stringValue
+            item.value = sender.stringValue
         }
     }
 }
@@ -338,11 +338,7 @@ extension ViewController: NSOutlineViewDelegate {
                 displayValue = outlineItem.key
             } else {
                 if tableID == "ValueCell" {
-                    if ( outlineItem.name != "" ) {
-                        displayValue = outlineItem.name
-                    } else {
-                        displayValue = outlineItem.value
-                    }
+                    displayValue = outlineItem.value
                 } else {
                     displayValue = outlineItem.optional ? "Yes" : "No"
                 }
