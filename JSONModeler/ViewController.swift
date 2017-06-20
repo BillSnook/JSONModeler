@@ -276,7 +276,11 @@ extension ViewController: NSOutlineViewDataSource {
     func outlineView(_ outlineView: NSOutlineView, numberOfChildrenOfItem item: Any?) -> Int {
         
         if let outlineItem = item as? Outline {
-            return outlineItem.children.count
+            if outlineItem.childType == .array {
+                return 1
+            } else {
+                return outlineItem.children.count
+            }
         }
         if let outlineCount = outlines?.children.count {
             return outlineCount
@@ -339,17 +343,30 @@ extension ViewController: NSOutlineViewDelegate {
         if let outlineItem = item as? Outline {
             let tableID = tableColumn?.identifier
             var displayValue = ""
+            var editable = false
+            var selectable = false
+            
             if tableID == "KeyCell" {
                 displayValue = outlineItem.key
             } else {
                 if tableID == "ValueCell" {
                     displayValue = outlineItem.value
+                    if outlineItem.childType != .string {
+                        editable = true
+                    }
                 } else {
                     displayValue = outlineItem.optional ? "Yes" : "No"
+                    selectable = true
                 }
             }
+
+
             view = outlineView.make(withIdentifier: tableID!, owner: self) as? NSTableCellView
             if let textField = view?.textField {
+                textField.isEditable = editable
+                if selectable {
+                    textField.isSelectable = selectable
+                }
                 textField.stringValue = displayValue
                 textField.sizeToFit()
             }
@@ -359,18 +376,18 @@ extension ViewController: NSOutlineViewDelegate {
     }
 
     func outlineView(_ outlineView: NSOutlineView, shouldEdit tableColumn: NSTableColumn?, item: Any) -> Bool {
-        
-        let tableID = tableColumn?.identifier
-        if tableID == "ValueCell" {
-            let outline = item as? Outline
-            if outline != nil {
-                if (outline?.children.count)! > 0 {
-                    return true
-                }
-            }
-        } else if tableID == "OptionalCell" {
-            return true
-        }
+
+//        let tableID = tableColumn?.identifier
+//        if tableID == "ValueCell" {
+//            let outline = item as? Outline
+//            if outline != nil {
+//                if (outline?.children.count)! > 0 {
+//                    return true
+//                }
+//            }
+//        } else if tableID == "OptionalCell" {
+//            return true
+//        }
         return false
     }
 
@@ -401,6 +418,4 @@ extension ViewController: NSOutlineViewDelegate {
 //        let tableID = tableColumn.identifier
 //        print( "Click in column \(tableID)" )
 //    }
-    
 }
-

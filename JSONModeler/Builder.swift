@@ -46,7 +46,7 @@ class Builder {
             }
         } else {
             if let objArray = objectRoot as? ArrayType {
-                if let children = modelArray( objArray ) {
+                if let children = modelArray( objArray, name: modelName ) {
                     outlineRoot.addChildren( children )
                     return outlineRoot
                 } else {
@@ -73,7 +73,7 @@ class Builder {
             print( "\(indentSpace)\(key ) :" )
             let value = dictionary[key]
             if let objDictionary = value as? DictionaryType {
-                let newOutline = Outline(key: key, value: "Dictionary", type: .dictionary )
+                let newOutline = Outline(key: key, value: key + "Dictionary", type: .dictionary )
                 if let children = modelDictionary( objDictionary ) {
                     newOutline.addChildren( children )
                     outline.append( newOutline )
@@ -82,8 +82,8 @@ class Builder {
                 }
             } else {
                 if let objArray = value as? ArrayType {
-                    let newOutline = Outline(key: key, value: "Array", type: .array )
-                    if let children = modelArray( objArray ) {
+                    let newOutline = Outline(key: key, value: key + "Array", type: .array )
+                    if let children = modelArray( objArray, name: key ) {
                         newOutline.addChildren( children )
                         outline.append( newOutline )
                     } else {
@@ -91,7 +91,7 @@ class Builder {
                     }
                 } else {
                     indent += 1
-                    if let value = modelString( value as AnyObject ) {
+                    if let _ = modelString( value as AnyObject ) {
                         let newOutline = Outline(key: key, value: "String", type: .string )
                         outline.append( newOutline )
                     } else {
@@ -105,15 +105,17 @@ class Builder {
         return outline
     }
     
-    func modelArray( _ array: ArrayType ) -> [Outline]? {
+    func modelArray( _ array: ArrayType, name: String ) -> [Outline]? {
     
         var outline = [Outline]()
         
         indent += 1
-//        outline.append( Outline(key: "[", value: "", type: .string ) )
+
+        var i = 0
         for entry in array {
+            i += 1
             if let objDictionary = entry as? DictionaryType {
-                let newOutline = Outline(key: "Array", value: "Dictionary", type: .dictionary )
+                let newOutline = Outline(key: name + "\(i)", value: name + "\(i)Dictionary", type: .dictionary )
                 if let children = modelDictionary( objDictionary ) {
                     newOutline.addChildren( children )
                     outline.append( newOutline )
@@ -122,8 +124,8 @@ class Builder {
                 }
             } else {
                 if let objArray = entry as? ArrayType {
-                    let newOutline = Outline(key: "Array", value: "Array", type: .array )
-                    if let children = modelArray( objArray ) {
+                    let newOutline = Outline(key: name + "\(i)", value: name + "\(i)Array", type: .array )
+                    if let children = modelArray( objArray, name: name + "\(i)" ) {
                         newOutline.addChildren( children )
                         outline.append( newOutline )
                     } else {
