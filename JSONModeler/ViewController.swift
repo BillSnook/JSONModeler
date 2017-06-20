@@ -17,7 +17,6 @@ class ViewController: NSViewController {
     
     @IBOutlet weak var fileLoadIndicator: NSProgressIndicator!
     
-    @IBOutlet weak var topButton: NSButton!
     @IBOutlet weak var bottomRightButton: NSButton!
     
     @IBOutlet weak var modelNameTextField: NSTextField!
@@ -86,8 +85,6 @@ class ViewController: NSViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        topButton.title = "TBD"
-        topButton.isHidden = true
         bottomRightButton.title = "Display Model FIle"
     }
 
