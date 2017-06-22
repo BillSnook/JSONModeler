@@ -148,6 +148,16 @@ class ViewController: NSViewController {
             }
         }
     }
+    
+    @IBAction func expandAll(_ sender: NSButton) {
+        
+        outlineTableView.expandItem( nil, expandChildren: true )
+    }
+    
+    @IBAction func collapseAll(_ sender: NSButton) {
+        
+        outlineTableView.collapseItem( nil, collapseChildren: true )
+    }
 }
 
     
@@ -273,11 +283,7 @@ extension ViewController: NSOutlineViewDataSource {
     func outlineView(_ outlineView: NSOutlineView, numberOfChildrenOfItem item: Any?) -> Int {
         
         if let outlineItem = item as? Outline {
-            if outlineItem.childType == .array {
-                return 1
-            } else {
-                return outlineItem.children.count
-            }
+            return outlineItem.children.count
         }
         if let outlineCount = outlines?.children.count {
             return outlineCount

@@ -109,39 +109,38 @@ class Builder {
     
         var outline = [Outline]()
         
+        guard let entry = array.first else { return outline }
+        
         indent += 1
 
         var i = 0
-        for entry in array {
-            i += 1
-            if let objDictionary = entry as? DictionaryType {
-                let newOutline = Outline(key: name + "\(i)", value: name + "\(i)Dictionary", type: .dictionary )
-                if let children = modelDictionary( objDictionary ) {
+        i += 1
+        if let objDictionary = entry as? DictionaryType {
+            let newOutline = Outline(key: name + "\(i)", value: name + "\(i)Dictionary", type: .dictionary )
+            if let children = modelDictionary( objDictionary ) {
+                newOutline.addChildren( children )
+                outline.append( newOutline )
+            } else {
+                return nil
+            }
+        } else {
+            if let objArray = entry as? ArrayType {
+                let newOutline = Outline(key: name + "\(i)", value: name + "\(i)Array", type: .array )
+                if let children = modelArray( objArray, name: name + "\(i)" ) {
                     newOutline.addChildren( children )
                     outline.append( newOutline )
                 } else {
                     return nil
                 }
             } else {
-                if let objArray = entry as? ArrayType {
-                    let newOutline = Outline(key: name + "\(i)", value: name + "\(i)Array", type: .array )
-                    if let children = modelArray( objArray, name: name + "\(i)" ) {
-                        newOutline.addChildren( children )
-                        outline.append( newOutline )
-                    } else {
-                        return nil
-                    }
+                if let value = modelString( entry as AnyObject ) {
+                    let newOutline = Outline(key: value, value: "String", type: .string )
+                    outline.append( newOutline )
                 } else {
-                    if let value = modelString( entry as AnyObject ) {
-                        let newOutline = Outline(key: value, value: "String", type: .string )
-                        outline.append( newOutline )
-                    } else {
-                        return nil
-                    }
+                    return nil
                 }
             }
         }
-//        outline.append( Outline(key: "]", value: "", type: .string ) )
         indent -= 1
         return outline
     }
