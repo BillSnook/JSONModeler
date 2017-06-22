@@ -55,13 +55,11 @@ class ViewController: NSViewController {
                 jsonObject = parser.processTokens()
                 guard jsonObject != nil else { return }
                 
-//                print( "Parser returns JSONObject: \(jsonObject!)" )
                 if var pathName = self.selectedItem?.lastPathComponent {    // Get clean name of json source file
                     if (pathName.hasSuffix( ".json" )) {
                         let endIndex = pathName.endIndex
                         pathName.removeSubrange(Range(uncheckedBounds: (lower: pathName.index(endIndex, offsetBy: -5), upper: endIndex)))
                         self.fileName = pathName
-                        print( "\(self.fileName!)" )
                     }
                 }
                 if fileName == nil {
@@ -115,8 +113,7 @@ class ViewController: NSViewController {
         
         let filer = Filer( model: modelNameTextField.stringValue, module: moduleNameTextField.stringValue, outline: outlines! )
         
-        let response = filer.buildModelFile()
-        print( "response: \(response)" )
+        let _ = filer.buildModelFile()
         
         displayRender( filer.fileContents )
         
@@ -135,12 +132,11 @@ class ViewController: NSViewController {
     }
 
     @IBAction func changedName(_ sender: NSTextField) {
-        print( "Changed string: \(sender.stringValue)" )
+
         let selectedRow = outlineTableView.selectedRow
         if selectedRow != -1 {
             let item = outlineTableView.item(atRow: selectedRow ) as! Outline
             let selectedColumn = outlineTableView.selectedColumn
-            print( "Changed item \(item.key) from \(item.value) to \(sender.stringValue)" )
             if selectedColumn == 1 {    // Value
                 item.value = sender.stringValue
             } else {                    // Optional
@@ -243,7 +239,6 @@ extension ViewController {
         let paragraphStyle = NSMutableParagraphStyle.default().mutableCopy() as? NSMutableParagraphStyle
         paragraphStyle?.minimumLineHeight = 20
         paragraphStyle?.alignment = .left
-//        paragraphStyle?.tabStops = [ NSTextTab(type: .leftTabStopType, location: 240) ]
         
         let textAttributes: [String: Any] = [
             NSFontAttributeName: NSFont.userFixedPitchFont(ofSize: 14)!,
@@ -257,12 +252,10 @@ extension ViewController {
         var parsedText = ""
         for token in tokens {
             parsedText += token + "\n"
-//            print( token )
         }
         let paragraphStyle = NSMutableParagraphStyle.default().mutableCopy() as? NSMutableParagraphStyle
         paragraphStyle?.minimumLineHeight = 24
         paragraphStyle?.alignment = .left
-        paragraphStyle?.tabStops = [ NSTextTab(type: .leftTabStopType, location: 240) ]
         
         let textAttributes: [String: Any] = [
             NSFontAttributeName: NSFont.systemFont(ofSize: 14),
@@ -317,7 +310,6 @@ extension ViewController: NSOutlineViewDataSource {
 
 //    func outlineView(_ outlineView: NSOutlineView, objectValueFor tableColumn: NSTableColumn?, byItem item: Any?) -> Any? {
 //        
-//        print( "tableColumn title: \(String(describing: tableColumn?.title))")
 //        var value = ""
 //        if item is DictionaryType {
 //            value = "Dictionary"
@@ -378,7 +370,7 @@ extension ViewController: NSOutlineViewDelegate {
         return view
     }
 
-    func outlineView(_ outlineView: NSOutlineView, shouldEdit tableColumn: NSTableColumn?, item: Any) -> Bool {
+//    func outlineView(_ outlineView: NSOutlineView, shouldEdit tableColumn: NSTableColumn?, item: Any) -> Bool {
 
 //        let tableID = tableColumn?.identifier
 //        if tableID == "ValueCell" {
@@ -391,8 +383,8 @@ extension ViewController: NSOutlineViewDelegate {
 //        } else if tableID == "OptionalCell" {
 //            return true
 //        }
-        return false
-    }
+//        return false
+//    }
 
 //    func outlineViewSelectionDidChange(_ notification: Notification) {
 //
@@ -419,6 +411,5 @@ extension ViewController: NSOutlineViewDelegate {
 //    func outlineView(_ outlineView: NSOutlineView, didClick tableColumn: NSTableColumn) {
 //        
 //        let tableID = tableColumn.identifier
-//        print( "Click in column \(tableID)" )
 //    }
 }

@@ -25,7 +25,6 @@ class Builder {
     
     var outlineRoot: Outline
     
-    var indent = 0
     
     init( _ jsonObject: AnyObject, fileName: String ) {
         
@@ -37,7 +36,6 @@ class Builder {
     func buildModelFile() -> Outline? {
     
         if let objDictionary = objectRoot as? DictionaryType {
-            print( "" )
             if let children = modelDictionary( objDictionary ) {
                 outlineRoot.addChildren( children )
                 return outlineRoot
@@ -64,13 +62,7 @@ class Builder {
         let keys = dictionary.keys
         var outline = [Outline]()
         
-        indent += 1
-        var indentSpace = ""
-        for _ in 1..<indent {
-            indentSpace += "  "
-        }
         for key in keys {
-            print( "\(indentSpace)\(key ) :" )
             let value = dictionary[key]
             if let objDictionary = value as? DictionaryType {
                 let newOutline = Outline(key: key, value: key + "Dictionary", type: .dictionary )
@@ -90,18 +82,15 @@ class Builder {
                         return nil
                     }
                 } else {
-                    indent += 1
                     if let _ = modelString( value as AnyObject ) {
                         let newOutline = Outline(key: key, value: "String", type: .string )
                         outline.append( newOutline )
                     } else {
                         return nil
                     }
-                    indent -= 1
                 }
             }
         }
-        indent -= 1
         return outline
     }
     
@@ -111,8 +100,6 @@ class Builder {
         
         guard let entry = array.first else { return outline }
         
-        indent += 1
-
         var i = 0
         i += 1
         if let objDictionary = entry as? DictionaryType {
@@ -141,7 +128,6 @@ class Builder {
                 }
             }
         }
-        indent -= 1
         return outline
     }
     
@@ -149,11 +135,6 @@ class Builder {
 
         let newString = object as? String
         if newString != nil {
-            var indentSpace = ""
-            for _ in 1..<indent {
-                indentSpace += "  "
-            }
-            print( "\(indentSpace)\(newString!)" )
             return newString
         } else {
             let hopefulString = String(describing: object)
