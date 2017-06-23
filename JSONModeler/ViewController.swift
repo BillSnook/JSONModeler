@@ -339,7 +339,7 @@ extension ViewController: NSOutlineViewDelegate {
             let tableID = tableColumn?.identifier
             var displayValue = ""
             var editable = false
-            var selectable = false
+//            var selectable = false
             
             if tableID == "KeyCell" {
                 displayValue = outlineItem.key
@@ -350,19 +350,26 @@ extension ViewController: NSOutlineViewDelegate {
                         editable = true
                     }
                 } else {
-                    displayValue = outlineItem.optional ? "Yes" : "No"
-                    selectable = true
+                    displayValue = outlineItem.childType.rawValue
+//                    displayValue = outlineItem.optional ? "Yes" : "No"
+//                    selectable = true
                 }
             }
-
-
+            
             view = outlineView.make(withIdentifier: tableID!, owner: self) as? NSTableCellView
             if let textField = view?.textField {
                 textField.isEditable = editable
-                if selectable {
-                    textField.isSelectable = selectable
-                }
+//                textField.isSelectable = selectable
                 textField.stringValue = displayValue
+                if outlineItem.leaf {
+                    textField.textColor = NSColor.init(red: 0.1, green: 0.8, blue: 0.2, alpha: 1.0)
+                } else {
+                    if outlineItem.itemType == .array && outlineItem.children.count == 0 {
+                        textField.textColor = NSColor.gray
+                    } else {
+                        textField.textColor = NSColor.black
+                    }
+                }
                 textField.sizeToFit()
             }
         }
