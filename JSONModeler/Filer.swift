@@ -51,11 +51,13 @@ class Filer {
     
     func startFileEntry() {
     
-        let headerFormat = "//\n//\t\(model).swift\n//\t\(module)\n//\n\nimport Foundation\nimport HiltonSharedUtilities\n\n"
+        let headerFormat = "//\n//\t\(model).swift\n//\t\(module)\n"
+        let creditFormat = "//\n//\tCreated on \(Date())\tfor Hilton\n//"
+        let importFormat = "\n\nimport Foundation\nimport HiltonSharedUtilities\n\n"
         
-        let classFormat = "@objc public final class \(model): NSObject {\n\n"
+        let classFormat  = "@objc public final class \(model): NSObject {\n\n"
         
-        fileContents = headerFormat + classFormat
+        fileContents = headerFormat + creditFormat + importFormat + classFormat
         
         // Fill in data
         
@@ -63,7 +65,7 @@ class Filer {
     
     func addSimpleProperty( _ value: String, type: String ) {
         
-        let simpleVarFormat = "\tpublic var \(value): \t\(type)\n"
+        let simpleVarFormat = "\tpublic var \(value): \t\t\(type)\n"
         fileContents += simpleVarFormat
         
     }

@@ -43,56 +43,40 @@ class ViewController: NSViewController {
             
             fileLoadIndicator.startAnimation( nil )
             let infoString = try? String(contentsOf: selectedUrl)   // Read it into a string
-            guard let textString = infoString else { return }
-            if !textString.isEmpty {
-                var tokens: [String]?
-                tokens = produceTokensFrom( JSON: textString )
-                guard tokens != nil else { return }
-                
-                displayTokens( tokens! )
-                
-                let parser = Parser( tokens! )
-                jsonObject = parser.processTokens()
-                guard jsonObject != nil else { return }
-                
-                if var pathName = self.selectedItem?.lastPathComponent {    // Get clean name of json source file
-                    if (pathName.hasSuffix( ".json" )) {
-                        let endIndex = pathName.endIndex
-                        pathName.removeSubrange(Range(uncheckedBounds: (lower: pathName.index(endIndex, offsetBy: -5), upper: endIndex)))
-                        self.fileName = pathName
-                    }
+            guard let textString = infoString, !textString.isEmpty else { return }
+            
+            var tokens: [String]?
+            tokens = produceTokensFrom( JSON: textString )          // Break it into meaningful tokens
+            guard tokens != nil else { return }
+            
+            displayTokens( tokens! )
+            
+            let parser = Parser( tokens! )
+            jsonObject = parser.processTokens()                     // Produce a swift dictionary or array
+            guard jsonObject != nil else { return }
+            
+            if var pathName = self.selectedItem?.lastPathComponent {    // Get clean name of json source file
+                if (pathName.hasSuffix( ".json" )) {
+                    let endIndex = pathName.endIndex
+                    pathName.removeSubrange(Range(uncheckedBounds: (lower: pathName.index(endIndex, offsetBy: -5), upper: endIndex)))
+                    self.fileName = pathName                            // For default model name
                 }
-                if fileName == nil {
-                    fileName = "Root"
-                }
-                
-                let builder = Builder( jsonObject!, fileName: fileName! )
-                outlines = builder.buildModelFile()
-                
-                outlineTableView.reloadData()
-                
-                saveInfoButton.isEnabled = ( outlines != nil )
             }
+            if fileName == nil {
+                fileName = "Root"
+            }
+            
+            let builder = Builder( jsonObject!, fileName: fileName! )
+            outlines = builder.buildModelFile()                     // Build outline view model from object
+            
+            outlineTableView.reloadData()                           // Profit
+            
+            saveInfoButton.isEnabled = ( outlines != nil )
+            
             fileLoadIndicator.stopAnimation( nil )
         }
     }
     
-
-    // View events
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
-        bottomRightButton.title = "Display Model FIle"
-    }
-
-    override var representedObject: Any? {
-        didSet {
-        // Update the view, if already loaded.
-        }
-    }
-
-    // Action events
     @IBAction func findJSONFile(_ sender: NSButton) {
         guard let window = view.window else { return }
         
@@ -109,9 +93,31 @@ class ViewController: NSViewController {
         }
     }
     
+    
+    // View events
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        // Do any additional setup after loading the view.
+        bottomRightButton.title = "Display Model FIle"
+    }
+
+//    override var representedObject: Any? {
+//        didSet {
+//        // Update the view, if already loaded.
+//        }
+//    }
+
+    // Action events
     @IBAction func saveInfo(_ sender: NSButton) {
         
-        let filer = Filer( model: modelNameTextField.stringValue, module: moduleNameTextField.stringValue, outline: outlines! )
+        var modelName = self.fileName
+        let modelText = modelNameTextField.stringValue
+        if !modelText.isEmpty {
+            modelName = modelText
+        }
+//        modelName = modelName!.capitalized // Not quite, also removes existing camelcase formatting
+        let filer = Filer( model: modelName!, module: moduleNameTextField.stringValue, outline: outlines! )
         
         let _ = filer.buildModelFile()
         
@@ -364,7 +370,7 @@ extension ViewController: NSOutlineViewDelegate {
                 if outlineItem.leaf {
                     textField.textColor = NSColor.init(red: 0.3, green: 0.7, blue: 0.4, alpha: 1.0)
                 } else {
-                    if outlineItem.childType == .array && outlineItem.children.count == 0 {
+                    if outlineItem.emptyArray {
                         textField.textColor = NSColor.gray
                     } else {
                         textField.textColor = NSColor.black

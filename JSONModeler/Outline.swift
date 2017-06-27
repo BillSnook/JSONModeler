@@ -19,19 +19,19 @@ enum EntryType: String {
 class Outline: NSObject {
     let key:        String
     var value:      String
-    var itemType:   EntryType
     let childType:  EntryType
     var optional:   Bool
     var leaf:       Bool
+    var emptyArray: Bool
     var children:   [Outline]
     
     init( key: String, value: String, type: EntryType ) {
         self.key = key
         self.value = value
-        self.itemType = type
         self.childType = type
         self.optional = false
         self.leaf = false
+        self.emptyArray = false
         self.children = [Outline]()
     }
     
@@ -44,6 +44,10 @@ class Outline: NSObject {
                     self.leaf = false
                 }
                 self.children.append( child )
+            }
+        } else {
+            if self.childType == .array {
+                self.emptyArray = true
             }
         }
     }
