@@ -28,7 +28,7 @@ class Outline: NSObject {
     init( key: String, value: String, type: EntryType ) {
         self.key = key
         self.value = value
-        self.itemType = .unknown
+        self.itemType = type
         self.childType = type
         self.optional = false
         self.leaf = false
@@ -37,8 +37,14 @@ class Outline: NSObject {
     
     func addChildren( _ children: [Outline] ) {
         
-        for child in children {
-            self.children.append( child )
+        if children.count > 0 {
+            self.leaf = true
+            for child in children {
+                if child.childType != .string {
+                    self.leaf = false
+                }
+                self.children.append( child )
+            }
         }
     }
 

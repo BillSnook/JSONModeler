@@ -30,16 +30,16 @@ class Filer {
         
         for index in 0..<outline.children.count {
             let thisModel = outline.children[index]
-            switch thisModel.childType {
-            case .string:
-                addSimpleProperty( thisModel.key )
-            case .dictionary:
-                addDictionaryProperty( thisModel.key )
-            case .array:
-                addArrayProperty( thisModel.key )
-            default:
-                addSimpleProperty( "?" )
-            }
+//            switch thisModel.childType {
+//            case .string:
+            addSimpleProperty( thisModel.key, type: thisModel.childType.rawValue )
+//            case .dictionary:
+//                addDictionaryProperty( thisModel.key )
+//            case .array:
+//                addArrayProperty( thisModel.key )
+//            default:
+//                addSimpleProperty( "?" )
+//            }
         }
         
         makeInits()
@@ -51,7 +51,7 @@ class Filer {
     
     func startFileEntry() {
     
-        let headerFormat = "//\n//  \(model).swift\n//  \(module)\n//\n\nimport Foundation\nimport HiltonSharedUtilities\n\n"
+        let headerFormat = "//\n//\t\(model).swift\n//\t\(module)\n//\n\nimport Foundation\nimport HiltonSharedUtilities\n\n"
         
         let classFormat = "@objc public final class \(model): NSObject {\n\n"
         
@@ -61,30 +61,16 @@ class Filer {
         
     }
     
-    func addSimpleProperty( _ value: String ) {
+    func addSimpleProperty( _ value: String, type: String ) {
         
-        let simpleVarFormat = "    public var \(value) : String\n"
-        fileContents += simpleVarFormat
-        
-    }
-    
-    func addDictionaryProperty( _ value: String ) {
-        
-        let simpleVarFormat = "    public var \(value) : Dictionary\n"
-        fileContents += simpleVarFormat
-        
-    }
-    
-    func addArrayProperty( _ value: String ) {
-        
-        let simpleVarFormat = "    public var \(value) : Array\n"
+        let simpleVarFormat = "\tpublic var \(value): \t\(type)\n"
         fileContents += simpleVarFormat
         
     }
     
     func makeInits( ) {
         
-        fileContents += "\n    init( "
+        fileContents += "\n\tinit( "
         
         for index in 0..<outline.children.count {
             let thisModel = outline.children[index]
@@ -98,7 +84,7 @@ class Filer {
         fileContents += " ) {\n\n"
         
         
-        fileContents += "\n    }\n\n"
+        fileContents += "\n\t}\n\n"
     }
     
     func paramName( _ name: String, type: String ) -> String {

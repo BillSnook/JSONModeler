@@ -26,7 +26,6 @@ class ViewController: NSViewController {
     @IBOutlet weak var moduleNameLabel: NSTextField!
     
     
-    var tokens: [String]?
     
     var jsonObject: AnyObject?
     
@@ -40,12 +39,13 @@ class ViewController: NSViewController {
             displayTextView.string = ""
             saveInfoButton.isEnabled = false
             
-            guard let selectedUrl = selectedItem else { return }
+            guard let selectedUrl = selectedItem else { return }    // Got file URL
             
             fileLoadIndicator.startAnimation( nil )
-            let infoString = try? String(contentsOf: selectedUrl)
+            let infoString = try? String(contentsOf: selectedUrl)   // Read it into a string
             guard let textString = infoString else { return }
             if !textString.isEmpty {
+                var tokens: [String]?
                 tokens = produceTokensFrom( JSON: textString )
                 guard tokens != nil else { return }
                 
@@ -362,9 +362,9 @@ extension ViewController: NSOutlineViewDelegate {
 //                textField.isSelectable = selectable
                 textField.stringValue = displayValue
                 if outlineItem.leaf {
-                    textField.textColor = NSColor.init(red: 0.1, green: 0.8, blue: 0.2, alpha: 1.0)
+                    textField.textColor = NSColor.init(red: 0.3, green: 0.7, blue: 0.4, alpha: 1.0)
                 } else {
-                    if outlineItem.itemType == .array && outlineItem.children.count == 0 {
+                    if outlineItem.childType == .array && outlineItem.children.count == 0 {
                         textField.textColor = NSColor.gray
                     } else {
                         textField.textColor = NSColor.black
