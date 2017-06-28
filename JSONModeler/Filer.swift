@@ -30,7 +30,7 @@ class Filer {
         
         for index in 0..<outline.children.count {
             let thisModel = outline.children[index]
-            addSimpleProperty( thisModel.key, type: thisModel.childType.rawValue )
+            addSimpleProperty( thisModel.key, type: thisModel.value )
         }
         
         makeInits()
@@ -51,7 +51,7 @@ class Filer {
         let createdDate = dateFormatter.string( from: Date() )
 
         let name = "Bill"
-        let modelName = capitalizeName(name: model )
+        let modelName = capitalizeName( model )
 
         let headerFormat = "//\n//\t\(modelName).swift\n//\t\(module)\n//\n"
         let creditFormat = "//\tCreated by \(name) on \(createdDate)\n"
@@ -68,7 +68,7 @@ class Filer {
     
     func addSimpleProperty( _ value: String, type: String ) {
         
-        let simpleVarFormat = "\tpublic var \(value): \t\t\(type)\n"
+        let simpleVarFormat = "\tpublic var \(unCapitalizeName( value )): \(type)\n"
         fileContents += simpleVarFormat
         
     }
@@ -80,21 +80,32 @@ class Filer {
         for index in 0..<outline.children.count {
             let thisModel = outline.children[index]
             
-            fileContents += paramName( thisModel.key, type: thisModel.childType.rawValue )
+            fileContents += paramName( thisModel.key, type: thisModel.value )
             if index < outline.children.count-1 {
                 fileContents += ", "
             }
         }
         
         fileContents += " ) {\n\n"
-        
+ 
+        for index in 0..<outline.children.count {
+            let thisModel = outline.children[index]
+            
+            fileContents += initName( thisModel.key )
+        }
+
         
         fileContents += "\n\t}\n\n"
     }
     
     func paramName( _ name: String, type: String ) -> String {
         
-        return "\(name): \(type)"
+        return "\(unCapitalizeName( name )): \(type)"
+    }
+    
+    func initName( _ name: String ) -> String {
+        
+        return "\t\tself.\(unCapitalizeName( name )) = \(unCapitalizeName( name ))\n"
     }
     
     func typeToString( _ type: EntryType ) -> String {
@@ -109,11 +120,20 @@ class Filer {
         fileContents += footerFormat
     }
     
-    func capitalizeName( name: String ) -> String {
+    func capitalizeName( _ name: String ) -> String {
         
         var newName = name
         var ch = newName.remove(at: newName.startIndex)
         ch = Character( String( ch ).uppercased() )
+        newName.insert( ch, at: newName.startIndex )
+        
+        return newName
+    }
+    func unCapitalizeName( _ name: String ) -> String {
+        
+        var newName = name
+        var ch = newName.remove(at: newName.startIndex)
+        ch = Character( String( ch ).lowercased() )
         newName.insert( ch, at: newName.startIndex )
         
         return newName
