@@ -378,7 +378,7 @@ extension ViewController: NSOutlineViewDelegate {
                     textField.textColor = NSColor.init(red: 0.3, green: 0.7, blue: 0.4, alpha: 1.0)
                 } else {
                     if outlineItem.emptyArray {
-                        textField.textColor = NSColor.gray
+                        textField.textColor = NSColor.init(red: 0.8, green: 0.2, blue: 0.2, alpha: 1.0)
                     } else {
                         textField.textColor = NSColor.black
                     }
