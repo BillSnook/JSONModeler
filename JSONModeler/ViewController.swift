@@ -117,7 +117,14 @@ class ViewController: NSViewController {
             modelName = modelText
         }
 //        modelName = modelName!.capitalized // Not quite, also removes existing camelcase formatting
-        let filer = Filer( model: modelName!, module: moduleNameTextField.stringValue, outline: outlines! )
+
+        var moduleName = "ModuleName"
+        let moduleText = moduleNameTextField.stringValue
+        if !moduleText.isEmpty {
+            moduleName = moduleText
+        }
+
+        let filer = Filer( model: modelName!, module: moduleName, outline: outlines! )
         
         let _ = filer.buildModelFile()
         

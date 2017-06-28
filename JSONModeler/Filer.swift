@@ -30,16 +30,7 @@ class Filer {
         
         for index in 0..<outline.children.count {
             let thisModel = outline.children[index]
-//            switch thisModel.childType {
-//            case .string:
             addSimpleProperty( thisModel.key, type: thisModel.childType.rawValue )
-//            case .dictionary:
-//                addDictionaryProperty( thisModel.key )
-//            case .array:
-//                addArrayProperty( thisModel.key )
-//            default:
-//                addSimpleProperty( "?" )
-//            }
         }
         
         makeInits()
@@ -50,14 +41,26 @@ class Filer {
     }
     
     func startFileEntry() {
-    
-        let headerFormat = "//\n//\t\(model).swift\n//\t\(module)\n"
-        let creditFormat = "//\n//\tCreated on \(Date())\tfor Hilton\n//"
-        let importFormat = "\n\nimport Foundation\nimport HiltonSharedUtilities\n\n"
+
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "en_US")
+        dateFormatter.setLocalizedDateFormatFromTemplate("YYYY") // set template after setting locale
+        let cpywrtDate = dateFormatter.string( from: Date() )
         
-        let classFormat  = "@objc public final class \(model): NSObject {\n\n"
+        dateFormatter.setLocalizedDateFormatFromTemplate("MM/dd/YYYY")
+        let createdDate = dateFormatter.string( from: Date() )
+
+        let name = "Bill"
+        let modelName = capitalizeName(name: model )
+
+        let headerFormat = "//\n//\t\(modelName).swift\n//\t\(module)\n//\n"
+        let creditFormat = "//\tCreated by \(name) on \(createdDate)\n"
+        let cpywrtFormat = "//\tCopyright (c) \(cpywrtDate) Hilton Worldwide Inc. All rights reserved.\n"
+        let importFormat = "//\n\nimport Foundation\nimport HiltonSharedUtilities\n\n"
         
-        fileContents = headerFormat + creditFormat + importFormat + classFormat
+        let classFormat  = "@objc public final class \(modelName): NSObject {\n\n"
+        
+        fileContents = headerFormat + creditFormat + cpywrtFormat + importFormat + classFormat
         
         // Fill in data
         
@@ -104,5 +107,15 @@ class Filer {
         let footerFormat = "\n}\n"
         
         fileContents += footerFormat
+    }
+    
+    func capitalizeName( name: String ) -> String {
+        
+        var newName = name
+        var ch = newName.remove(at: newName.startIndex)
+        ch = Character( String( ch ).uppercased() )
+        newName.insert( ch, at: newName.startIndex )
+        
+        return newName
     }
 }
