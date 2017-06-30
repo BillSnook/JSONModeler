@@ -13,6 +13,7 @@ class Filer {
     
     let model: String
     let module: String
+    var modelName: String
     
     var outline: Outline
     var fileContents = ""
@@ -22,11 +23,12 @@ class Filer {
         self.model = model
         self.module = module
         self.outline = outline
+        self.modelName = ""
     }
     
     func buildModelFile() -> String {
         
-        startFileEntry()
+        startMainClassEntry()
         
         for index in 0..<outline.children.count {
             let thisModel = outline.children[index]
@@ -35,12 +37,15 @@ class Filer {
         
         makeInits()
         
-        finishFileEntry()
+        finishMainClassEntry()
+        
+        makeDecodable()
+        makeEncodable()
 
         return fileContents
     }
     
-    func startFileEntry() {
+    func startMainClassEntry() {
 
         let dateFormatter = DateFormatter()
         dateFormatter.locale = Locale(identifier: "en_US")
@@ -50,8 +55,9 @@ class Filer {
         dateFormatter.setLocalizedDateFormatFromTemplate("MM/dd/YYYY")
         let createdDate = dateFormatter.string( from: Date() )
 
+        modelName = capitalizeName( model )
+        
         let name = "Bill"
-        let modelName = capitalizeName( model )
 
         let headerFormat = "//\n//\t\(modelName).swift\n//\t\(module)\n//\n"
         let creditFormat = "//\tCreated by \(name) on \(createdDate)\n"
@@ -87,16 +93,77 @@ class Filer {
         }
         
         fileContents += " ) {\n\n"
- 
+        
         for index in 0..<outline.children.count {
             let thisModel = outline.children[index]
             
             fileContents += initName( thisModel.key )
         }
-
         
-        fileContents += "\n\t}\n\n"
+        
+        fileContents += "\n\t}\n"
     }
+    
+    func finishMainClassEntry() {
+        
+        let footerFormat = "\n}\n"
+        
+        fileContents += footerFormat
+    }
+    
+    func makeDecodable( ) {
+        
+        fileContents += "\n\nextension \(modelName): JSONDecodable {\n"
+        fileContents += "\n\tpublic static func decode(_ json: JSON) throws -> \(modelName) {\n"
+        
+        //        for index in 0..<outline.children.count {
+        //            let thisModel = outline.children[index]
+        //
+        //            fileContents += paramName( thisModel.key, type: thisModel.value )
+        //            if index < outline.children.count-1 {
+        //                fileContents += ", "
+        //            }
+        //        }
+        //
+        //        fileContents += " ) {\n\n"
+        //
+        //        for index in 0..<outline.children.count {
+        //            let thisModel = outline.children[index]
+        //
+        //            fileContents += initName( thisModel.key )
+        //        }
+        
+        fileContents += "\t}\n\n}\n\n"
+    }
+    
+    func makeEncodable( ) {
+        
+        fileContents += "\n\nextension \(modelName): JSONEncodable {\n"
+        fileContents += "\n\tpublic static func encode(_ json: JSON) throws -> \(modelName) {\n"
+        
+        //        for index in 0..<outline.children.count {
+        //            let thisModel = outline.children[index]
+        //
+        //            fileContents += paramName( thisModel.key, type: thisModel.value )
+        //            if index < outline.children.count-1 {
+        //                fileContents += ", "
+        //            }
+        //        }
+        //
+        //        fileContents += " ) {\n\n"
+        //
+        //        for index in 0..<outline.children.count {
+        //            let thisModel = outline.children[index]
+        //
+        //            fileContents += initName( thisModel.key )
+        //        }
+        
+        fileContents += "\t}\n\n}\n\n"
+    }
+    
+    
+//--    ----    ----    ----    ----    ----    ----    ----
+    
     
     func paramName( _ name: String, type: String ) -> String {
         
@@ -113,13 +180,6 @@ class Filer {
         return type.rawValue
     }
     
-    func finishFileEntry() {
-    
-        let footerFormat = "\n}\n"
-        
-        fileContents += footerFormat
-    }
-    
     func capitalizeName( _ name: String ) -> String {
         
         var newName = name
@@ -129,6 +189,7 @@ class Filer {
         
         return newName
     }
+    
     func unCapitalizeName( _ name: String ) -> String {
         
         var newName = name
