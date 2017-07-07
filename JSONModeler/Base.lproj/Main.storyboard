@@ -916,7 +916,7 @@
                                 <rect key="frame" x="567" y="12" width="16" height="16"/>
                             </progressIndicator>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="YG7-Q1-a8h">
-                                <rect key="frame" x="4" y="502" width="104" height="32"/>
+                                <rect key="frame" x="4" y="506" width="104" height="32"/>
                                 <buttonCell key="cell" type="push" title="Expand All" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="UeJ-7V-OTR">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -926,7 +926,7 @@
                                 </connections>
                             </button>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ZAi-RB-67S">
-                                <rect key="frame" x="106" y="502" width="111" height="32"/>
+                                <rect key="frame" x="106" y="506" width="111" height="32"/>
                                 <buttonCell key="cell" type="push" title="Collapse All" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="4K2-RI-MXT">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -975,30 +975,78 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
+                            <colorWell translatesAutoresizingMaskIntoConstraints="NO" id="jx5-Ry-1IG" userLabel="Empty Arrays Color Well">
+                                <rect key="frame" x="10" y="489" width="32" height="20"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="32" id="AwP-tQ-JU7"/>
+                                    <constraint firstAttribute="height" constant="20" id="aAv-LC-8ku"/>
+                                </constraints>
+                                <color key="color" red="0.80000000000000004" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </colorWell>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qq7-IY-6QS" userLabel="Empty Arrays Label">
+                                <rect key="frame" x="48" y="493" width="80" height="14"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="14" id="hsY-mN-EdO"/>
+                                    <constraint firstAttribute="width" constant="76" id="kXL-Ye-10Z"/>
+                                </constraints>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Empty Arrays" id="b3T-9B-Ay4">
+                                    <font key="font" metaFont="smallSystem"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <colorWell translatesAutoresizingMaskIntoConstraints="NO" id="EeF-14-Coe" userLabel="Leaf Nodes Color Well">
+                                <rect key="frame" x="146" y="489" width="32" height="20"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="20" id="InU-jh-6iT"/>
+                                    <constraint firstAttribute="width" constant="32" id="xvR-sw-Ilr"/>
+                                </constraints>
+                                <color key="color" red="0.29999999999999999" green="0.69999999999999996" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </colorWell>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rzX-Am-Nhh" userLabel="Leaf Nodes Label">
+                                <rect key="frame" x="184" y="493" width="74" height="14"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="14" id="XXd-Fn-38s"/>
+                                    <constraint firstAttribute="width" constant="70" id="hJb-sR-7bv"/>
+                                </constraints>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Leaf Nodes" id="6GW-2J-0xl">
+                                    <font key="font" metaFont="smallSystem"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
                         </subviews>
                         <constraints>
                             <constraint firstItem="ZAi-RB-67S" firstAttribute="leading" secondItem="YG7-Q1-a8h" secondAttribute="trailing" constant="10" id="2t5-xv-cWj"/>
                             <constraint firstItem="z5g-6i-lYt" firstAttribute="trailing" secondItem="NUO-p9-6PV" secondAttribute="trailing" id="38n-7d-bXi"/>
                             <constraint firstAttribute="bottom" secondItem="NRX-q0-IR6" secondAttribute="bottom" constant="10" id="3pu-51-f2h"/>
-                            <constraint firstItem="YG7-Q1-a8h" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" constant="10" id="9oX-hb-Eug"/>
+                            <constraint firstItem="YG7-Q1-a8h" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" constant="6" id="9oX-hb-Eug"/>
                             <constraint firstItem="NUO-p9-6PV" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" constant="10" id="AB2-2W-Rqp"/>
                             <constraint firstItem="G2c-AS-t50" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" id="ALV-Hf-REk"/>
                             <constraint firstAttribute="trailing" secondItem="G2c-AS-t50" secondAttribute="trailing" id="AgN-h8-dPQ"/>
                             <constraint firstAttribute="bottom" secondItem="gb6-og-piT" secondAttribute="bottom" constant="10" id="CDh-D4-5w2"/>
                             <constraint firstItem="NRX-q0-IR6" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="20" id="CQm-An-lat"/>
+                            <constraint firstItem="EeF-14-Coe" firstAttribute="leading" secondItem="qq7-IY-6QS" secondAttribute="trailing" constant="20" id="FZ8-6I-2n6"/>
                             <constraint firstItem="mwI-IP-P5w" firstAttribute="trailing" secondItem="2LI-d3-UIy" secondAttribute="trailing" id="JOn-gH-WJn"/>
                             <constraint firstItem="G2c-AS-t50" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" constant="55" id="Jl5-0c-XGs"/>
+                            <constraint firstItem="rzX-Am-Nhh" firstAttribute="top" secondItem="ZAi-RB-67S" secondAttribute="bottom" constant="6" id="KKb-cn-rQg"/>
+                            <constraint firstItem="qq7-IY-6QS" firstAttribute="leading" secondItem="jx5-Ry-1IG" secondAttribute="trailing" constant="8" id="OXl-Z4-pTC"/>
                             <constraint firstItem="xC1-uA-UXS" firstAttribute="centerX" secondItem="m2S-Jp-Qdl" secondAttribute="centerX" id="Pyp-2V-cW1"/>
+                            <constraint firstItem="qq7-IY-6QS" firstAttribute="top" secondItem="ZAi-RB-67S" secondAttribute="bottom" constant="6" id="Q6b-fL-4EV"/>
+                            <constraint firstItem="jx5-Ry-1IG" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="10" id="SgI-FQ-Awu"/>
+                            <constraint firstItem="rzX-Am-Nhh" firstAttribute="leading" secondItem="EeF-14-Coe" secondAttribute="trailing" constant="8" id="TBa-Zh-pxo"/>
                             <constraint firstItem="mwI-IP-P5w" firstAttribute="top" secondItem="2LI-d3-UIy" secondAttribute="bottom" constant="3" id="TSi-58-fAr"/>
                             <constraint firstItem="2LI-d3-UIy" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" constant="10" id="X05-HU-NIb"/>
                             <constraint firstItem="YG7-Q1-a8h" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="10" id="YRW-Xu-av1"/>
                             <constraint firstItem="NUO-p9-6PV" firstAttribute="leading" secondItem="2LI-d3-UIy" secondAttribute="trailing" constant="8" id="YgG-Aq-ICh"/>
-                            <constraint firstItem="ZAi-RB-67S" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" constant="10" id="d09-zf-g6f"/>
+                            <constraint firstItem="EeF-14-Coe" firstAttribute="top" secondItem="ZAi-RB-67S" secondAttribute="bottom" constant="4" id="a5S-EI-mst"/>
+                            <constraint firstItem="ZAi-RB-67S" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" constant="6" id="d09-zf-g6f"/>
                             <constraint firstItem="NRX-q0-IR6" firstAttribute="top" secondItem="G2c-AS-t50" secondAttribute="bottom" constant="10" id="ekV-dv-gMe"/>
                             <constraint firstAttribute="trailing" secondItem="NUO-p9-6PV" secondAttribute="trailing" constant="20" id="fuf-Dx-ebn"/>
                             <constraint firstItem="mwI-IP-P5w" firstAttribute="leading" secondItem="2LI-d3-UIy" secondAttribute="leading" id="gEF-fb-nGD"/>
                             <constraint firstItem="z5g-6i-lYt" firstAttribute="top" secondItem="NUO-p9-6PV" secondAttribute="bottom" constant="3" id="gjK-E5-PMh"/>
                             <constraint firstAttribute="bottom" secondItem="xC1-uA-UXS" secondAttribute="bottom" constant="12" id="jce-3B-NHk"/>
+                            <constraint firstItem="jx5-Ry-1IG" firstAttribute="top" secondItem="YG7-Q1-a8h" secondAttribute="bottom" constant="4" id="qSe-8G-r4k"/>
                             <constraint firstItem="z5g-6i-lYt" firstAttribute="leading" secondItem="NUO-p9-6PV" secondAttribute="leading" id="sny-6B-aXe"/>
                             <constraint firstAttribute="trailing" secondItem="gb6-og-piT" secondAttribute="trailing" constant="20" id="vZr-KZ-KWv"/>
                         </constraints>
@@ -1006,7 +1054,9 @@
                     <connections>
                         <outlet property="bottomRightButton" destination="gb6-og-piT" id="4w2-DF-534"/>
                         <outlet property="displayTextView" destination="tYC-lV-CQj" id="Pb0-Ll-La8"/>
+                        <outlet property="emptyArraysColorWell" destination="jx5-Ry-1IG" id="LXK-zK-g41"/>
                         <outlet property="fileLoadIndicator" destination="xC1-uA-UXS" id="1ZC-8u-QKx"/>
+                        <outlet property="leafNodesColorWell" destination="EeF-14-Coe" id="M0C-8L-tCd"/>
                         <outlet property="modelNameLabel" destination="mwI-IP-P5w" id="xz0-2X-ytA"/>
                         <outlet property="modelNameTextField" destination="2LI-d3-UIy" id="i2u-vb-MpC"/>
                         <outlet property="moduleNameLabel" destination="z5g-6i-lYt" id="iHp-TS-GKz"/>

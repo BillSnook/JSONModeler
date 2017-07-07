@@ -25,7 +25,8 @@ class ViewController: NSViewController {
     @IBOutlet weak var modelNameLabel: NSTextField!
     @IBOutlet weak var moduleNameLabel: NSTextField!
     
-    
+    @IBOutlet weak var emptyArraysColorWell: NSColorWell!
+    @IBOutlet weak var leafNodesColorWell: NSColorWell!
     
     var jsonObject: AnyObject?
     
@@ -46,7 +47,9 @@ class ViewController: NSViewController {
             guard let textString = infoString, !textString.isEmpty else { return }
             
             var tokens: [String]?
-            tokens = produceTokensFrom( JSON: textString )          // Break it into meaningful tokens
+
+            let tokenizer = Tokenizer()
+            tokens = tokenizer.makeTokens( JSON: textString )       // Break it into meaningful tokens
             guard tokens != nil else { return }
             
             displayTokens( tokens! )
@@ -55,11 +58,11 @@ class ViewController: NSViewController {
             jsonObject = parser.processTokens()                     // Produce a swift dictionary or array
             guard jsonObject != nil else { return }
             
-            if var pathName = self.selectedItem?.lastPathComponent {    // Get clean name of json source file
+            if var pathName = selectedItem?.lastPathComponent {     // Get clean name of json source file
                 if (pathName.hasSuffix( ".json" )) {
                     let endIndex = pathName.endIndex
                     pathName.removeSubrange(Range(uncheckedBounds: (lower: pathName.index(endIndex, offsetBy: -5), upper: endIndex)))
-                    self.fileName = pathName                            // For default model name
+                    fileName = pathName                             // For default model name
                 }
             }
             if fileName == nil {
@@ -94,14 +97,28 @@ class ViewController: NSViewController {
     }
     
     
-    // View events
+    // MARK: - View events
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
         bottomRightButton.title = "Display Model FIle"
+
+        NotificationCenter.default.addObserver(self, selector: #selector(ViewController.emptyColorChanged), name: NSNotification.Name.NSColorPanelColorDidChange, object: emptyArraysColorWell)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(ViewController.leafColorChanged), name: NSNotification.Name.NSColorPanelColorDidChange, object: leafNodesColorWell)
     }
 
+    @objc func emptyColorChanged(sender: NSColorWell?) {
+        print("emptyColorChanged")
+    }
+    
+    @objc func leafColorChanged(sender: NSColorWell?) {
+        print("leafColorChanged")
+    }
+    
+    
 //    override var representedObject: Any? {
 //        didSet {
 //        // Update the view, if already loaded.
@@ -170,83 +187,10 @@ class ViewController: NSViewController {
 }
 
     
-// MARK: - Getting file or folder information
+// MARK: - Display routines
 
 extension ViewController {
     
-    func produceTokensFrom(JSON text: String) -> [String] {
-        var tokens = [String]()
-        let brackets: Set<Character> = ["{","}","[","]",":",","]
-        let quoters: Set<Character> = ["\"","\'"]
-        let ignored: Set<Character> = [" ","\t","\n","\r"]
-        var index = 0
-        
-        var parseString = ""
-        var quoteString = ""
-        
-        var inQuotedString = false
-        var isEscapingNextCharacter = false
-        
-        for character in text.characters {
-            
-            if inQuotedString {
-                if isEscapingNextCharacter {
-                    if !quoters.contains( character ) {
-                        quoteString += "\\"
-                    }
-                    quoteString += String( character )
-                    isEscapingNextCharacter = false
-                    continue
-                }
-                if character == "\\" {  // The presence of this character escapes the value of the next one
-//                    quoteString += String( character ) // Comment out to remove escaping characters
-                    isEscapingNextCharacter = true
-                    continue
-                }
-            } else {
-                if ignored.contains( character ) {
-                    continue
-                }
-            }
-            if quoters.contains( character ) { // May match ' with ", use: character == "\""
-                inQuotedString = !inQuotedString
-//                quoteString += String( character )    // Comment out to retain quotes around keys and values
-                if !inQuotedString {
-                    tokens.append( quoteString )
-                    index += 1
-                    quoteString = ""
-                }
-                continue
-            } else {
-                if inQuotedString {
-                    quoteString += String( character )
-                    continue
-                }
-            }
-            
-            if brackets.contains( character ) {
-                if !parseString.isEmpty {
-                    tokens.append( parseString )
-                    index += 1
-                    parseString = ""
-                }
-                tokens.append( String( character ) )
-                index += 1
-            } else {
-                parseString += String( character )
-            }
-        }
-        if !parseString.isEmpty {   // Should be an error, should end on a bracket
-            tokens.append( parseString )
-            print( "Error at end, leftover data: \(parseString)" )
-        }
-        if inQuotedString {
-            print( "Error at end, still in quoted string" )
-        }
-        
-        return tokens
-    }
-
     func displayRender( _ string: String) {
 
         let paragraphStyle = NSMutableParagraphStyle.default().mutableCopy() as? NSMutableParagraphStyle
@@ -278,7 +222,6 @@ extension ViewController {
         displayTextView.textStorage?.setAttributedString( NSAttributedString(string: parsedText, attributes: textAttributes) )
     }
     
-
 }
 
 
@@ -375,10 +318,10 @@ extension ViewController: NSOutlineViewDelegate {
 //                textField.isSelectable = selectable
                 textField.stringValue = displayValue
                 if outlineItem.leaf {
-                    textField.textColor = NSColor.init(red: 0.3, green: 0.7, blue: 0.4, alpha: 1.0)
+                    textField.textColor = leafNodesColorWell.color // NSColor.init(red: 0.3, green: 0.7, blue: 0.4, alpha: 1.0)
                 } else {
                     if outlineItem.emptyArray {
-                        textField.textColor = NSColor.init(red: 0.8, green: 0.2, blue: 0.2, alpha: 1.0)
+                        textField.textColor = emptyArraysColorWell.color //NSColor.init(red: 0.8, green: 0.2, blue: 0.2, alpha: 1.0)
                     } else {
                         textField.textColor = NSColor.black
                     }
