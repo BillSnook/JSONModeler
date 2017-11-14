@@ -1067,7 +1067,6 @@
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="bottomRightButton" destination="gb6-og-piT" id="4w2-DF-534"/>
                         <outlet property="displayTextView" destination="tYC-lV-CQj" id="Pb0-Ll-La8"/>
                         <outlet property="emptyArraysColorWell" destination="jx5-Ry-1IG" id="LXK-zK-g41"/>
                         <outlet property="fileLoadIndicator" destination="xC1-uA-UXS" id="1ZC-8u-QKx"/>

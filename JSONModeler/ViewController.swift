@@ -17,9 +17,7 @@ class ViewController: NSViewController {
     @IBOutlet weak var saveSelectedButton: NSButton!
     
     @IBOutlet weak var fileLoadIndicator: NSProgressIndicator!
-    
-    @IBOutlet weak var bottomRightButton: NSButton!
-    
+
     @IBOutlet weak var modelNameTextField: NSTextField!
     @IBOutlet weak var moduleNameTextField: NSTextField!
     
@@ -104,10 +102,11 @@ class ViewController: NSViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        bottomRightButton.title = "Display Model FIle"
+        saveInfoButton.title = "Save Model"
+        saveInfoButton.isEnabled = false
 
+        // Live updating of color wells
         NotificationCenter.default.addObserver(self, selector: #selector(ViewController.emptyColorChanged), name: NSNotification.Name.NSColorPanelColorDidChange, object: emptyArraysColorWell)
-        
         NotificationCenter.default.addObserver(self, selector: #selector(ViewController.leafColorChanged), name: NSNotification.Name.NSColorPanelColorDidChange, object: leafNodesColorWell)
     }
 
@@ -134,6 +133,8 @@ class ViewController: NSViewController {
     
     @IBAction func saveInfo(_ sender: NSButton) {
         
+        saveInfoButton.isEnabled = false
+
         var modelName = self.fileName
         let modelText = modelNameTextField.stringValue
         if !modelText.isEmpty {
@@ -149,11 +150,14 @@ class ViewController: NSViewController {
 
         let filer = Filer( model: modelName!, module: moduleName, outline: outlines! )
         
-        let _ = filer.buildModelFile()
+        filer.buildModelFile()
+        guard !filer.fileContents.isEmpty else { return }
         
         displayRender( filer.fileContents )
         
-        saveInfoButton.isEnabled = false
+        filer.saveFile()
+        
+        saveInfoButton.isEnabled = true
     }
     
     @IBAction func doubleClickEntry(_ sender: NSOutlineView) {
@@ -308,9 +312,9 @@ extension ViewController: NSOutlineViewDelegate {
             } else {
                 if tableID == "ValueCell" {
                     displayValue = outlineItem.value
-                    if outlineItem.childType != .string {
+//                    if outlineItem.childType != .string {
                         editable = true
-                    }
+//                    }
                 } else {
                     displayValue = outlineItem.childType.rawValue
 //                    displayValue = outlineItem.optional ? "Yes" : "No"

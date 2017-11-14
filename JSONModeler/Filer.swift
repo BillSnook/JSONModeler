@@ -26,7 +26,7 @@ class Filer {
         self.modelName = ""
     }
     
-    func buildModelFile() -> String {
+    func buildModelFile() {
         
         startMainClassEntry()
         
@@ -41,8 +41,6 @@ class Filer {
         
         makeDecodable()
         makeEncodable()
-
-        return fileContents
     }
     
     func startMainClassEntry() {
@@ -199,4 +197,11 @@ class Filer {
         
         return newName
     }
+    
+    // File actions
+    func saveFile() {
+        
+        
+    }
+    
 }
