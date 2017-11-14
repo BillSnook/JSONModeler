@@ -14,6 +14,7 @@ class ViewController: NSViewController {
     @IBOutlet weak var displayTextView: NSTextView!
     
     @IBOutlet weak var saveInfoButton: NSButton!
+    @IBOutlet weak var saveSelectedButton: NSButton!
     
     @IBOutlet weak var fileLoadIndicator: NSProgressIndicator!
     
@@ -126,6 +127,11 @@ class ViewController: NSViewController {
 //    }
 
     // Action events
+    @IBAction func saveSelected(_ sender: NSButton) {
+        
+        
+    }
+    
     @IBAction func saveInfo(_ sender: NSButton) {
         
         var modelName = self.fileName

@@ -26,7 +26,7 @@ class Tokenizer {
         var inQuotedString = false
         var isEscapingNextCharacter = false
         
-        for character in text.characters {
+        for character in text {
             
             if inQuotedString {
                 if isEscapingNextCharacter {
