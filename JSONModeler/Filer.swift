@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Cocoa
 
 
 class Filer {
@@ -201,7 +202,27 @@ class Filer {
     // File actions
     func saveFile() {
         
+        let panel = NSSavePanel()
+        panel.title = "Save File"
+        panel.prompt = "Save"
+        panel.nameFieldLabel = "File Name"
+        panel.message = "File name for model file"
         
+        panel.nameFieldStringValue = modelName + ".swift"
+        
+        guard let window = NSApplication.shared().mainWindow else { return }
+        panel.beginSheetModal(for: window) { (result) in
+            if result == NSFileHandlingPanelOKButton {
+                guard let url = panel.url else { return }
+                
+                do {
+                    // Write to disk
+                    try self.fileContents.write(to: url, atomically: false, encoding: .utf8)
+                } catch {
+                    print("error writing to url: \(url), error: \(error)")
+                }
+            }
+        }
     }
     
 }
