@@ -12,216 +12,70 @@ import Cocoa
 
 class Filer {
     
-    let model: String
-    let module: String
     var modelName: String
+    var moduleName: String
+    var url: URL?
     
-    var outline: Outline
-    var fileContents = ""
-    
-    init( model: String, module: String, outline: Outline ) {
-        
-        self.model = model
-        self.module = module
-        self.outline = outline
-        self.modelName = ""
+    init( modelName: String, moduleName: String ) {
+        self.modelName = modelName
+        self.moduleName = moduleName
     }
-    
-    func buildModelFile() {
-        
-        startMainClassEntry()
-        
-        for index in 0..<outline.children.count {
-            let thisModel = outline.children[index]
-            addSimpleProperty( thisModel.key, type: thisModel.value )
-        }
-        
-        makeInits()
-        
-        finishMainClassEntry()
-        
-        makeDecodable()
-        makeEncodable()
-    }
-    
-    func startMainClassEntry() {
-
-        let dateFormatter = DateFormatter()
-        dateFormatter.locale = Locale(identifier: "en_US")
-        dateFormatter.setLocalizedDateFormatFromTemplate("YYYY") // set template after setting locale
-        let cpywrtDate = dateFormatter.string( from: Date() )
-        
-        dateFormatter.setLocalizedDateFormatFromTemplate("MM/dd/YYYY")
-        let createdDate = dateFormatter.string( from: Date() )
-
-        modelName = capitalizeName( model )
-        
-        let name = "Bill"
-
-        let headerFormat = "//\n//\t\(modelName).swift\n//\t\(module)\n//\n"
-        let creditFormat = "//\tCreated by \(name) on \(createdDate)\n"
-        let cpywrtFormat = "//\tCopyright (c) \(cpywrtDate) Hilton Worldwide Inc. All rights reserved.\n"
-        let importFormat = "//\n\nimport Foundation\nimport HiltonSharedUtilities\n\n"
-        
-        let classFormat  = "@objc public final class \(modelName): NSObject {\n\n"
-        
-        fileContents = headerFormat + creditFormat + cpywrtFormat + importFormat + classFormat
-        
-        // Fill in data
-        
-    }
-    
-    func addSimpleProperty( _ value: String, type: String ) {
-        
-        let simpleVarFormat = "\tpublic var \(unCapitalizeName( value )): \(type)\n"
-        fileContents += simpleVarFormat
-        
-    }
-    
-    func makeInits( ) {
-        
-        fileContents += "\n\tinit( "
-        
-        for index in 0..<outline.children.count {
-            let thisModel = outline.children[index]
-            
-            fileContents += paramName( thisModel.key, type: thisModel.value )
-            if index < outline.children.count-1 {
-                fileContents += ", "
-            }
-        }
-        
-        fileContents += " ) {\n\n"
-        
-        for index in 0..<outline.children.count {
-            let thisModel = outline.children[index]
-            
-            fileContents += initName( thisModel.key )
-        }
-        
-        
-        fileContents += "\n\t}\n"
-    }
-    
-    func finishMainClassEntry() {
-        
-        let footerFormat = "\n}\n"
-        
-        fileContents += footerFormat
-    }
-    
-    func makeDecodable( ) {
-        
-        fileContents += "\n\nextension \(modelName): JSONDecodable {\n"
-        fileContents += "\n\tpublic static func decode(_ json: JSON) throws -> \(modelName) {\n"
-        
-        //        for index in 0..<outline.children.count {
-        //            let thisModel = outline.children[index]
-        //
-        //            fileContents += paramName( thisModel.key, type: thisModel.value )
-        //            if index < outline.children.count-1 {
-        //                fileContents += ", "
-        //            }
-        //        }
-        //
-        //        fileContents += " ) {\n\n"
-        //
-        //        for index in 0..<outline.children.count {
-        //            let thisModel = outline.children[index]
-        //
-        //            fileContents += initName( thisModel.key )
-        //        }
-        
-        fileContents += "\t}\n\n}\n\n"
-    }
-    
-    func makeEncodable( ) {
-        
-        fileContents += "\n\nextension \(modelName): JSONEncodable {\n"
-        fileContents += "\n\tpublic static func encode(_ json: JSON) throws -> \(modelName) {\n"
-        
-        //        for index in 0..<outline.children.count {
-        //            let thisModel = outline.children[index]
-        //
-        //            fileContents += paramName( thisModel.key, type: thisModel.value )
-        //            if index < outline.children.count-1 {
-        //                fileContents += ", "
-        //            }
-        //        }
-        //
-        //        fileContents += " ) {\n\n"
-        //
-        //        for index in 0..<outline.children.count {
-        //            let thisModel = outline.children[index]
-        //
-        //            fileContents += initName( thisModel.key )
-        //        }
-        
-        fileContents += "\t}\n\n}\n\n"
-    }
-    
-    
-//--    ----    ----    ----    ----    ----    ----    ----
-    
-    
-    func paramName( _ name: String, type: String ) -> String {
-        
-        return "\(unCapitalizeName( name )): \(type)"
-    }
-    
-    func initName( _ name: String ) -> String {
-        
-        return "\t\tself.\(unCapitalizeName( name )) = \(unCapitalizeName( name ))\n"
-    }
-    
-    func typeToString( _ type: EntryType ) -> String {
-        
-        return type.rawValue
-    }
-    
-    func capitalizeName( _ name: String ) -> String {
-        
-        var newName = name
-        var ch = newName.remove(at: newName.startIndex)
-        ch = Character( String( ch ).uppercased() )
-        newName.insert( ch, at: newName.startIndex )
-        
-        return newName
-    }
-    
-    func unCapitalizeName( _ name: String ) -> String {
-        
-        var newName = name
-        var ch = newName.remove(at: newName.startIndex)
-        ch = Character( String( ch ).lowercased() )
-        newName.insert( ch, at: newName.startIndex )
-        
-        return newName
-    }
-    
     // File actions
-    func saveFile() {
+    func saveFile( _ outline: Outline ) {
         
         let panel = NSSavePanel()
-        panel.title = "Save File"
-        panel.prompt = "Save"
-        panel.nameFieldLabel = "File Name"
-        panel.message = "File name for model file"
+        panel.title = "Save Models"
+        panel.prompt = "Save All"
+        panel.nameFieldLabel = "Directory Name"
+        panel.message = "Directory name for model files"
         
-        panel.nameFieldStringValue = modelName + ".swift"
+        panel.nameFieldStringValue = modelName
         
         guard let window = NSApplication.shared().mainWindow else { return }
         panel.beginSheetModal(for: window) { (result) in
             if result == NSFileHandlingPanelOKButton {
-                guard let url = panel.url else { return }
-                
-                do {
-                    // Write to disk
-                    try self.fileContents.write(to: url, atomically: false, encoding: .utf8)
-                } catch {
-                    print("error writing to url: \(url), error: \(error)")
-                }
+                self.url = panel.url
+                guard self.url != nil else { return }
+                self.writeFiles( outline, toDir: panel.nameFieldStringValue )
             }
+        }
+    }
+    
+    func writeFiles( _ outline: Outline, toDir: String ) {
+        
+        guard url != nil else { return }
+        let dirURL = URL(fileURLWithPath: toDir, isDirectory: true, relativeTo: url)
+        do {
+            try FileManager.default.createDirectory(at: dirURL, withIntermediateDirectories: false, attributes: nil)
+            writeOutline( outline, inDir: dirURL )
+        } catch {
+            print("error creating directory at url: \(dirURL.absoluteString), error: \(error)")
+        }
+    }
+    
+    func writeOutline( _ outline: Outline, inDir: URL  ) {
+        
+        for child in outline.children {
+            writeOutline( child, inDir: inDir )
+        }
+        writeModel( outline, inDir: inDir )
+    }
+    
+    func writeModel( _ outline: Outline, inDir: URL  ) {
+        
+        guard outline.childType != .string else  { return }
+        
+        let name = outline.key
+        let fullURL = URL(fileURLWithPath: name + ".swift", relativeTo: inDir)
+
+        let modeler = Modeler( model: modelName, module: moduleName, outline: outline )
+        modeler.buildModelFile()
+        guard !modeler.fileContents.isEmpty else { return }
+        
+        do {        // Write to disk
+            try modeler.fileContents.write(to: fullURL, atomically: false, encoding: .utf8)
+        } catch {
+            print("error writing to url: \(String(describing: url)), error: \(error)")
         }
     }
     

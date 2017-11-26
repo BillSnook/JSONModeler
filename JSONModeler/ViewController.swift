@@ -31,13 +31,14 @@ class ViewController: NSViewController {
     
     var outlines: Outline?
 
+    var modeler: Modeler?
     var filer: Filer?
 
     var fileName = ""
     var modelName = ""
     var moduleName = ""
 
-    var selectedItem: URL? {
+    var selectedItem: URL? {    // Set when file is opened
         didSet {
             displayTextView.string = ""
             saveInfoButton.isEnabled = false
@@ -54,7 +55,7 @@ class ViewController: NSViewController {
             tokens = tokenizer.makeTokens( JSON: textString )       // Break it into meaningful tokens
             guard tokens != nil else { return }
             
-            displayTokens( tokens! )
+//            displayTokens( tokens! )
             
             let parser = Parser( tokens! )
             jsonObject = parser.processTokens()                     // Produce a swift dictionary or array
@@ -75,8 +76,8 @@ class ViewController: NSViewController {
             outlines = builder.buildModelFile()                     // Build outline view model from object
             
             if outlines != nil {
-                outlineTableView.reloadData()                          // Profit
-                showModel( outlines! )
+                outlineTableView.reloadData()                       // Profit - er, show table of model
+                makeModel( outlines )                               // Display top level model file
             }
             
             saveInfoButton.isEnabled = ( outlines != nil )
@@ -108,7 +109,7 @@ class ViewController: NSViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        saveInfoButton.title = "Save Model"
+        saveInfoButton.title = "Save All"
         saveInfoButton.isEnabled = false
 
         // Live updating of color wells
@@ -143,9 +144,12 @@ class ViewController: NSViewController {
         
         saveInfoButton.isEnabled = false
 
-        showModel( outlines! )
+        makeModel( nil )
         
-        filer!.saveFile()
+        filer = Filer( modelName: modelName, moduleName: moduleName )
+        guard filer != nil else { return }
+        
+        filer!.saveFile( outlines! )
         
         saveInfoButton.isEnabled = true
     }
@@ -205,45 +209,27 @@ extension ViewController {
         displayTextView.textStorage?.setAttributedString( NSAttributedString(string: string, attributes: textAttributes) )
     }
     
-    func displayTokens( _ tokens: [String]) {
-        var parsedText = ""
-        for token in tokens {
-            parsedText += token + "\n"
-        }
-        let paragraphStyle = NSMutableParagraphStyle.default().mutableCopy() as? NSMutableParagraphStyle
-        paragraphStyle?.minimumLineHeight = 24
-        paragraphStyle?.alignment = .left
+    func makeModel( _ outline: Outline?) {
         
-        let textAttributes: [String: Any] = [
-            NSFontAttributeName: NSFont.systemFont(ofSize: 14),
-            NSParagraphStyleAttributeName: paragraphStyle ?? NSParagraphStyle.default()
-        ]
-        
-        displayTextView.textStorage?.setAttributedString( NSAttributedString(string: parsedText, attributes: textAttributes) )
-    }
-    
-    func showModel( _ outline: Outline) {
-        
-        modelName = self.fileName
-        let modelText = modelNameTextField.stringValue
-        if !modelText.isEmpty {
-            modelName = modelText
-        }
-//        modelName = modelName!.capitalized // Not quite, also removes existing camelcase formatting
-        
-        moduleName = "ModuleName"
+        moduleName = self.fileName
         let moduleText = moduleNameTextField.stringValue
         if !moduleText.isEmpty {
             moduleName = moduleText
         }
         
-        filer = Filer( model: modelName, module: moduleName, outline: outline )
-        guard filer != nil else { return }
+        guard outlines != nil || outline != nil else { return }
+        let model = outline == nil ? outlines! : outline!
+
+        modelName = model.key // self.fileName
+//        modelName = modelName!.capitalized // Not quite, also removes existing camelcase formatting
         
-        filer!.buildModelFile()
-        guard !filer!.fileContents.isEmpty else { return }
+        modeler = Modeler( model: modelName, module: moduleName, outline: model )
+        guard modeler != nil else { return }
         
-        displayRender( filer!.fileContents )
+        modeler!.buildModelFile()
+        guard !modeler!.fileContents.isEmpty else { return }
+        
+        displayRender( modeler!.fileContents )    // Show it
     }
 }
 
@@ -325,9 +311,9 @@ extension ViewController: NSOutlineViewDelegate {
             } else {
                 if tableID == "ValueCell" {
                     displayValue = outlineItem.value
-//                    if outlineItem.childType != .string {
+                    if outlineItem.childType != .string {
                         editable = true
-//                    }
+                    }
                 } else {
                     displayValue = outlineItem.childType.rawValue
 //                    displayValue = outlineItem.optional ? "Yes" : "No"
