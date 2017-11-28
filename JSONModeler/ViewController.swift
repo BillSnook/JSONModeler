@@ -31,7 +31,6 @@ class ViewController: NSViewController {
     
     var outlines: Outline?
 
-    var modeler: Modeler?
     var filer: Filer?
 
     var fileName = ""
@@ -143,8 +142,6 @@ class ViewController: NSViewController {
         guard outlines != nil else { return }
         
         saveInfoButton.isEnabled = false
-
-        makeModel( nil )
         
         filer = Filer( modelName: modelName, moduleName: moduleName )
         guard filer != nil else { return }
@@ -227,13 +224,10 @@ extension ViewController {
         modelName = model.key // self.fileName
 //        modelName = modelName!.capitalized // Not quite, also removes existing camelcase formatting
         
-        modeler = Modeler( model: modelName, module: moduleName, outline: model )
-        guard modeler != nil else { return }
-        
-        modeler!.buildModelFile()
-        guard !modeler!.fileContents.isEmpty else { return }
-        
-        displayRender( modeler!.fileContents )    // Show it
+        let modeler = Modeler( model: modelName, module: moduleName, outline: model )
+        modeler.buildModelFile()
+        guard !modeler.fileContents.isEmpty else { return }
+        displayRender( modeler.fileContents )    // Show it
     }
 }
 
@@ -362,16 +356,20 @@ extension ViewController: NSOutlineViewDelegate {
 //        return false
 //    }
 
-//    func outlineViewSelectionDidChange(_ notification: Notification) {
-//
-//        guard let outlineView = notification.object as? NSOutlineView else {
-//            return
-//        }
-//
-//        let selectedIndex = outlineView.selectedRow
-//        // Do something
-//    }
-//
+    func outlineViewSelectionDidChange(_ notification: Notification) {
+
+        guard let outlineView = notification.object as? NSOutlineView else {
+            return
+        }
+
+        let selectedIndex = outlineView.selectedRow
+        if let outline = outlineView.item(atRow: selectedIndex ) as? Outline {
+            if outline.value != "String" {
+                makeModel( outline )
+            }
+        }
+    }
+
 //    func outlineView(_ outlineView: NSOutlineView, shouldSelect tableColumn: NSTableColumn?) -> Bool {
 //        
 //        let tableID = tableColumn?.identifier
