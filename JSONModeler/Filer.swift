@@ -64,9 +64,11 @@ class Filer {
     func writeModel( _ outline: Outline, inDir: URL  ) {
         
         guard outline.childType != .string else  { return }
-        
-        let name = outline.key
-        let fullURL = URL(fileURLWithPath: name + ".swift", relativeTo: inDir)
+
+        let modelName = outline.value
+        guard !modelName.isEmpty else  { return }
+
+        let fullURL = URL(fileURLWithPath: modelName + ".swift", relativeTo: inDir)
 
         let modeler = Modeler( model: modelName, module: moduleName, outline: outline )
         modeler.buildModelFile()

@@ -38,7 +38,7 @@ class ViewController: NSViewController {
     var modelName = ""
     var moduleName = ""
 
-    var selectedItem: URL? {    // Set when file is opened
+    var selectedItem: URL? {    // Set when file is opened - file url of data to be read
         didSet {
             displayTextView.string = ""
             saveInfoButton.isEnabled = false
@@ -77,7 +77,7 @@ class ViewController: NSViewController {
             
             if outlines != nil {
                 outlineTableView.reloadData()                       // Profit - er, show table of model
-                makeModel( outlines )                               // Display top level model file
+                makeModel( outlines )                               // Display model file
             }
             
             saveInfoButton.isEnabled = ( outlines != nil )
@@ -216,7 +216,11 @@ extension ViewController {
         if !moduleText.isEmpty {
             moduleName = moduleText
         }
-        
+        let modelText = modelNameTextField.stringValue
+        if !modelText.isEmpty {
+            modelName = modelText
+        }
+
         guard outlines != nil || outline != nil else { return }
         let model = outline == nil ? outlines! : outline!
 

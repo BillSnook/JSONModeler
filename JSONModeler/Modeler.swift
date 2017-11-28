@@ -56,11 +56,11 @@ class Modeler {
         dateFormatter.setLocalizedDateFormatFromTemplate("MM/dd/YYYY")
         let createdDate = dateFormatter.string( from: Date() )
         
-        modelName = outline.key // capitalizeName( model )
+        modelName = outline.key // capitalize( model )
         
-        let name = "Bill"
+        let name = self.model
         
-        let fingerprint = "\nKey: \(self.outline.key), value: \(self.outline.value), type: \(self.outline.childType.rawValue)\n" // ""
+        let fingerprint = "" // \nKey: \(self.outline.key), value: \(self.outline.value), type: \(self.outline.childType.rawValue)\n\n"
         
         let headerFormat = "//\n//\t\(modelName).swift\n//\t\(module)\n//\n"
         let creditFormat = "//\tCreated by \(name) on \(createdDate)\n"
@@ -77,7 +77,7 @@ class Modeler {
     
     func addSimpleProperty( _ value: String, type: String ) {
         
-        let simpleVarFormat = "\tpublic var \(unCapitalizeName( value )): \(type)\n"
+        let simpleVarFormat = "\tpublic var \(uncapitalize( value )): \(type)\n"
         fileContents += simpleVarFormat
         
     }
@@ -166,16 +166,18 @@ class Modeler {
     
     
     //--    ----    ----    ----    ----    ----    ----    ----
-    
+    //--    MARK: - Utility routines
+    //--    ----    ----    ----    ----    ----    ----    ----
+
     
     func paramName( _ name: String, type: String ) -> String {
         
-        return "\(unCapitalizeName( name )): \(type)"
+        return "\(uncapitalize( name )): \(type)"
     }
     
     func initName( _ name: String ) -> String {
         
-        return "\t\tself.\(unCapitalizeName( name )) = \(unCapitalizeName( name ))\n"
+        return "\t\tself.\(uncapitalize( name )) = \(uncapitalize( name ))\n"
     }
     
     func typeToString( _ type: EntryType ) -> String {
@@ -183,7 +185,7 @@ class Modeler {
         return type.rawValue
     }
     
-    func capitalizeName( _ name: String ) -> String {
+    func capitalize( _ name: String ) -> String {
         
         var newName = name
         var ch = newName.remove(at: newName.startIndex)
@@ -193,7 +195,7 @@ class Modeler {
         return newName
     }
     
-    func unCapitalizeName( _ name: String ) -> String {
+    func uncapitalize( _ name: String ) -> String {
         
         var newName = name
         var ch = newName.remove(at: newName.startIndex)
