@@ -12,7 +12,7 @@ import Cocoa
 
 class Modeler {
     
-    let model: String
+    let creator: String
     let module: String
     var modelName: String
     
@@ -21,9 +21,9 @@ class Modeler {
     
     var url: URL?
     
-    init( model: String, module: String, outline: Outline ) {
+    init( creator: String, module: String, outline: Outline ) {
         
-        self.model = model
+        self.creator = creator
         self.module = module
         self.outline = outline
         self.modelName = ""
@@ -31,9 +31,14 @@ class Modeler {
     
     func buildModelFile() {
         
+        if outline.value == "" {
+            if outline.children.first != nil {
+                outline = outline.children.first!
+            }
+        }
         startMainClassEntry()
         
-        for index in 0..<outline.children.count {
+        for index in 0 ..< outline.children.count {
             let thisModel = outline.children[index]
             addSimpleProperty( thisModel.key, type: thisModel.value )
         }
@@ -58,14 +63,12 @@ class Modeler {
         
         modelName = outline.key // capitalize( model )
         
-        let name = self.model
-        
-        let fingerprint = "" // \nKey: \(self.outline.key), value: \(self.outline.value), type: \(self.outline.childType.rawValue)\n\n"
+        let fingerprint = "\nKey: \(self.outline.key), value: \(self.outline.value), type: \(self.outline.childType.rawValue)\n" // ""
         
         let headerFormat = "//\n//\t\(modelName).swift\n//\t\(module)\n//\n"
-        let creditFormat = "//\tCreated by \(name) on \(createdDate)\n"
+        let creditFormat = "//\tCreated by \(creator) on \(createdDate)\n"
         let cpywrtFormat = "//\tCopyright (c) \(cpywrtDate) Hilton Worldwide Inc. All rights reserved.\n"
-        let importFormat = "//\n\nimport Foundation\nimport HiltonSharedUtilities\n\n"
+        let importFormat = "//\n\nimport Foundation\nimport HiltonSharedUtilities\nimport HiltonCoreFoundation\n\n"
         
         let classFormat  = "@objc public final class \(modelName): NSObject {\n\n"
         
@@ -119,22 +122,22 @@ class Modeler {
         fileContents += "\n\nextension \(modelName): JSONDecodable {\n"
         fileContents += "\n\tpublic static func decode(_ json: JSON) throws -> \(modelName) {\n"
         
-        //        for index in 0..<outline.children.count {
-        //            let thisModel = outline.children[index]
-        //
-        //            fileContents += paramName( thisModel.key, type: thisModel.value )
-        //            if index < outline.children.count-1 {
-        //                fileContents += ", "
-        //            }
-        //        }
-        //
-        //        fileContents += " ) {\n\n"
-        //
-        //        for index in 0..<outline.children.count {
-        //            let thisModel = outline.children[index]
-        //
-        //            fileContents += initName( thisModel.key )
-        //        }
+//        for index in 0..<outline.children.count {
+//            let thisModel = outline.children[index]
+//
+//            fileContents += paramName( thisModel.key, type: thisModel.value )
+//            if index < outline.children.count-1 {
+//                fileContents += ", "
+//            }
+//        }
+//
+//        fileContents += " ) {\n\n"
+//
+//        for index in 0..<outline.children.count {
+//            let thisModel = outline.children[index]
+//
+//            fileContents += initName( thisModel.key )
+//        }
         
         fileContents += "\t}\n\n}\n\n"
     }
@@ -144,22 +147,22 @@ class Modeler {
         fileContents += "\n\nextension \(modelName): JSONEncodable {\n"
         fileContents += "\n\tpublic static func encode(_ json: JSON) throws -> \(modelName) {\n"
         
-        //        for index in 0..<outline.children.count {
-        //            let thisModel = outline.children[index]
-        //
-        //            fileContents += paramName( thisModel.key, type: thisModel.value )
-        //            if index < outline.children.count-1 {
-        //                fileContents += ", "
-        //            }
-        //        }
-        //
-        //        fileContents += " ) {\n\n"
-        //
-        //        for index in 0..<outline.children.count {
-        //            let thisModel = outline.children[index]
-        //
-        //            fileContents += initName( thisModel.key )
-        //        }
+//        for index in 0..<outline.children.count {
+//            let thisModel = outline.children[index]
+//
+//            fileContents += paramName( thisModel.key, type: thisModel.value )
+//            if index < outline.children.count-1 {
+//                fileContents += ", "
+//            }
+//        }
+//
+//        fileContents += " ) {\n\n"
+//
+//        for index in 0..<outline.children.count {
+//            let thisModel = outline.children[index]
+//
+//            fileContents += initName( thisModel.key )
+//        }
         
         fileContents += "\t}\n\n}\n\n"
     }

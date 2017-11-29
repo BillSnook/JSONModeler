@@ -143,7 +143,7 @@ class ViewController: NSViewController {
         
         saveInfoButton.isEnabled = false
         
-        filer = Filer( modelName: modelName, moduleName: moduleName )
+        filer = Filer( creatorName: modelName, moduleName: moduleName )
         guard filer != nil else { return }
         
         filer!.saveFile( outlines! )
@@ -213,18 +213,18 @@ extension ViewController {
         if !moduleText.isEmpty {
             moduleName = moduleText
         }
+
+        guard outlines != nil || outline != nil else { return }
+        let rootOutline = outline == nil ? outlines! : outline!
+
+        modelName = rootOutline.key
         let modelText = modelNameTextField.stringValue
         if !modelText.isEmpty {
             modelName = modelText
         }
-
-        guard outlines != nil || outline != nil else { return }
-        let model = outline == nil ? outlines! : outline!
-
-        modelName = model.key // self.fileName
 //        modelName = modelName!.capitalized // Not quite, also removes existing camelcase formatting
         
-        let modeler = Modeler( model: modelName, module: moduleName, outline: model )
+        let modeler = Modeler( creator: modelName, module: moduleName, outline: rootOutline )
         modeler.buildModelFile()
         guard !modeler.fileContents.isEmpty else { return }
         displayRender( modeler.fileContents )    // Show it

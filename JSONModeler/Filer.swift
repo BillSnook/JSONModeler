@@ -12,12 +12,12 @@ import Cocoa
 
 class Filer {
     
-    var modelName: String
+    var creatorName: String
     var moduleName: String
     var url: URL?
     
-    init( modelName: String, moduleName: String ) {
-        self.modelName = modelName
+    init( creatorName: String, moduleName: String ) {
+        self.creatorName = creatorName
         self.moduleName = moduleName
     }
     // File actions
@@ -29,7 +29,7 @@ class Filer {
         panel.nameFieldLabel = "Directory Name"
         panel.message = "Directory name for model files"
         
-        panel.nameFieldStringValue = modelName
+        panel.nameFieldStringValue = creatorName
         
         guard let window = NSApplication.shared().mainWindow else { return }
         panel.beginSheetModal(for: window) { (result) in
@@ -70,7 +70,7 @@ class Filer {
 
         let fullURL = URL(fileURLWithPath: modelName + ".swift", relativeTo: inDir)
 
-        let modeler = Modeler( model: modelName, module: moduleName, outline: outline )
+        let modeler = Modeler( creator: creatorName, module: moduleName, outline: outline )
         modeler.buildModelFile()
         guard !modeler.fileContents.isEmpty else { return }
         
