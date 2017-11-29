@@ -146,7 +146,7 @@ class ViewController: NSViewController {
 
         makeModel( nil )
         
-        filer = Filer( modelName: modelName, moduleName: moduleName )
+        filer = Filer( creatorName: modelName, moduleName: moduleName )
         guard filer != nil else { return }
         
         filer!.saveFile( outlines! )
@@ -218,12 +218,16 @@ extension ViewController {
         }
         
         guard outlines != nil || outline != nil else { return }
-        let model = outline == nil ? outlines! : outline!
+        let rootOutline = outline == nil ? outlines! : outline!
 
-        modelName = model.key // self.fileName
+        modelName = rootOutline.key
+        let modelText = modelNameTextField.stringValue
+        if !modelText.isEmpty {
+            modelName = modelText
+        }
 //        modelName = modelName!.capitalized // Not quite, also removes existing camelcase formatting
         
-        modeler = Modeler( model: modelName, module: moduleName, outline: model )
+        modeler = Modeler( creator: modelName, module: moduleName, outline: rootOutline )
         guard modeler != nil else { return }
         
         modeler!.buildModelFile()
